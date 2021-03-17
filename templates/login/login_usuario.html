@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Login V12</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+<!--===============================================================================================-->
+	<link rel="icon" type="image/png" href="{{ url_for('static', filename='login/images/icons/favicon.ico')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/vendor/bootstrap/css/bootstrap.min.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/fonts/font-awesome-4.7.0/css/font-awesome.min.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/fonts/Linearicons-Free-v1.0.0/icon-font.min.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/vendor/animate/animate.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/vendor/css-hamburgers/hamburgers.min.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/vendor/select2/select2.min.css')}}"/>
+<!--===============================================================================================-->
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/css/util.css')}}"/>
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='login/css/main.css')}}"/>
+<!--===============================================================================================-->
+</head>
+<body>
+{% block content %}
+	<div class="limiter">
+
+		{% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+		<div class="container-login100" style="background-image: url('images/img-01.jpg');">
+			<div class="wrap-login100 p-t-10 p-b-30">
+				<form class="login100-form validate-form" action="{{ url_for('login.login_usuario') }}" method="post" >
+					<div class="login100-form-avatar">
+					</div>
+					<span class="login100-form-title p-t-20 p-b-45">
+						Panel de Control1
+					</span>
+					<span class="login100-form-title p-t-20 p-b-45">
+						Inicie Sesion
+					</span>
+					{{ login_usuario.csrf_token }}
+					<div class="wrap-input100 validate-input m-b-10" data-validate = "Email Requerido">
+						{{ login_usuario.email(class_="input100",placeholder="EMAIL") }}
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-user"></i>
+						</span>
+					</div>
+
+					<div class="wrap-input100 validate-input m-b-10" data-validate = "Contrasena Requerida">
+						{{ login_usuario.password(class_="input100",placeholder="Contraseña") }}
+						<span class="focus-input100"></span>
+						<span class="symbol-input100">
+							<i class="fa fa-lock"></i>
+						</span>
+					</div>
+
+					<div class="container-login100-form-btn p-t-10">
+						
+						<button class="login100-form-btn" type="submit">
+							Iniciar Sesion
+						</button>
+						
+					</div>
+
+					<div class="text-center w-full p-t-15 p-b-230">
+						<a href="{{url_for('login.registro_usuario')}}" class="txt1">
+							Registrese Aqui
+						</a>
+					</div>
+
+					<div class="text-center w-full p-t-0 p-b-0">
+						<a href="#" class="txt1">
+							Olvido Su Contraseña?
+						</a>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+<!--===============================================================================================-->
+	<script src="{{ url_for('static',filename='login/vendor/jquery/jquery-3.2.1.min.js')}}"></script>
+<!--===============================================================================================-->
+	<script src="{{ url_for('static',filename='login/vendor/bootstrap/js/popper.js')}}"></script>
+	<script src="{{ url_for('static',filename='login/vendor/bootstrap/js/bootstrap.min.js')}}"></script>
+<!--===============================================================================================-->
+	<script src="{{ url_for('static',filename='login/vendor/select2/select2.min.js')}}"></script>
+<!--===============================================================================================-->
+	<script src="{{ url_for('static',filename='login/js/main.js')}}"></script>
+
+</body>
+</html>

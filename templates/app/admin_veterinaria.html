@@ -1,0 +1,185 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Veterinaria</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Mi Veterinaria</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form action="{{ url_for('admin_bp.admin_veterinaria') }}" method="post" enctype="multipart/form-data">
+                    {{ form_veterinaria.csrf_token }}
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="nombre">Nombre Veterinaria</label>
+                        {{ form_veterinaria.nombre(class_="form-control" , value=diccionario.nombre) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="logo">Seleccione Logo</label>
+                        <!-- {{ form_veterinaria.logo(class_="form-control",onchange="OnFileValidation()") }} -->
+                        <input type="file" class="form-control" onchange="ValidateSize(this)" name="logo" id="logo">
+                      </div>
+                      <div class="form-group">
+                        <label for="telefono">Telefono de Contacto</label>
+                        {{ form_veterinaria.telefono(class_="form-control" , value=diccionario.telefono) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="whatsapp">Whatsapp</label>
+                        {{ form_veterinaria.whatsapp(class_="form-control" , value=diccionario.whatsapp) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="ciudad">Ciudad</label>
+                        {{ form_veterinaria.ciudad(class_="form-control hacky" , value=diccionario.ciudad ) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="distrito">Distrito</label>
+                        {{ form_veterinaria.distrito(class_="form-control hacky" , value=diccionario.distrito ) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="direccion">Direccion</label>
+                        {{ form_veterinaria.direccion(class_="form-control" , value=diccionario.direccion) }}
+                      </div>                   
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Actualizar</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /.card -->
+              </div> 
+              <div class="col-md-6">
+              <!-- Si no tiene Vet Asignada. : Mostrar Solo vetform e imagenes Muestra -->
+              <!-- Si tiene Vet Asignada. y  -->
+              {% if diccionario.vetid %}
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Foto</h3>
+                </div>
+                <form action="{{ url_for('admin_bp.admin_veterinaria') }}" method="post" enctype="multipart/form-data">
+                  {{ form_foto.csrf_token }}
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label for="logo">Seleccione Foto</label>
+                      <input type="file" class="form-control" onchange="ValidateSize(this)" name="foto" id="foto">
+                    </div>
+                  </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                  </div>
+                </form>
+               </div>    
+               {% endif %} 
+
+               <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Vista Previa</h3>
+                </div>
+                 <!-- /.card-header -->
+                 <!-- form start -->
+                  <div class="card-body">
+                    <h2> <center> Local </center></h2>
+                    <div class="form-group">
+                      {% if diccionario.imagen %}
+                    <center> <img src="{{ url_for('static', filename='imagenes/'+ diccionario.imagen ) }} " width="300" height="300"/> </center>
+                      {% else %}                            
+                      <center> <img src="{{ url_for('static', filename='imagenes/default.jpg')}}" width="300" height="300" class="user-image img-responsive"/> </center> 
+                      {% endif %}
+                    </div>
+                    <h2> <center> Logo </center></h2>
+                    <div class="form-group">
+                      {% if diccionario.logo  %}
+                      <center><img src="{{ url_for('static', filename='imagenes/'+ diccionario.logo ) }} " width="300" height="300"> </center>                    
+                      {% else %}                   
+                      <center> <img src="{{ url_for('static', filename='imagenes/default.jpg')}}" width="300" height="300" class="user-image img-responsive"/> </center> 
+                      {% endif %}
+                    </div>
+                  </div>
+        
+             
+            </div>
+          </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <script>
+    function ValidateSize(file) {
+        var FileSize = file.files[0].size / 1024 / 1024; // in MiB
+        if (FileSize > 1) {
+            alert('El Archivo no Puede Pesar mas de 1 Mega');
+           // $(file).val(''); //for clearing with Jquery
+        } else {
+        }
+    }
+  </script>
+
+<script>
+  var els = document.getElementsByClassName("hacky");
+  for (i = 0; i < els.length; i++) {
+      els[i].value = els[i].getAttribute('value');
+  }
+</script>
+
+  {% endblock %}
+
+  
+
+ 

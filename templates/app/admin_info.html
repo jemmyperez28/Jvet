@@ -1,0 +1,142 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">MI INFORMACION</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Informacion Personal</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form action="{{ url_for('admin_bp.admin_info') }}" method="post" >
+                    {{ form_admin_info.csrf_token }}
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="dni">DNI</label>
+                        {{ form_admin_info.dni(class_="form-control",value=datos.dni, readonly=True) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="email">Email</label>
+                        {{ form_admin_info.email(class_="form-control",value=datos.email,readonly=True) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        {{ form_admin_info.nombre(class_="form-control",value=datos.nombre) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="apellidos">Apellidos</label>
+                        {{ form_admin_info.apellidos(class_="form-control",value=datos.apellidos) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="telefono">Telefono</label>
+                        {{ form_admin_info.telefono(class_="form-control",value=datos.telefono) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="tipo_uservet">Tipo de Usuario</label>
+                        {{ form_admin_info.tipo_uservet(class_="form-control",value=datos.tipo_uservet,readonly=True) }}
+                      </div>              
+                    </div>
+                    <!-- /.card-body -->
+    
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Actualizar Informacion</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /.card -->
+              </div>
+
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Actualizar Contraseña</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form action="{{ url_for('admin_bp.admin_info') }}" method="post" >
+                    {{ form_forgot_password.csrf_token }}
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="password_old">Antigua Contraseña</label>
+                        {{ form_forgot_password.password_old(class_="form-control",type="Password") }}
+                      </div>
+                      <div class="form-group">
+                        <label for="password1">Nueva Contraseña</label>
+                        {{ form_forgot_password.password1(class_="form-control",type="Password") }}
+                      </div>
+                      <div class="form-group">
+                        <label for="password2">Repita Contraseña</label>
+                        {{ form_forgot_password.password2(class_="form-control",type="Password") }}                   
+                       </div>           
+                    </div>
+                    <!-- /.card-body -->
+    
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Actualizar Informacion</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /.card -->
+              </div>
+
+            </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock %}

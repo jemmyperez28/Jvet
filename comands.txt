@@ -1,0 +1,7 @@
+flask db downgrade
+flask db upgrade 
+
+flask db init  : crea los archivos iniciales. 
+flask db migrate : Crea la migracion o el archivo (upgrade y downgrade)
+flask db upgrade : usa el script de actualizacion de la version.
+flask db downgrade : regreso a la aanterior version (una vez regresado , eliminar el ultimo archivo .py de las carpeta de migraciones)
