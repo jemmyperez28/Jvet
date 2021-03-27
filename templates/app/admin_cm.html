@@ -1,0 +1,277 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"> Clientes / Mascotas </h1> 
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content"> 
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
+
+        <div class="container-fluid">      
+            <!-- Comprobador DNI-->
+            <div class="row">
+                <div class="col-md-3">  
+                  <form class="form-horizontal" action="{{ url_for('admin_bp.admin_dni') }}" method="get">
+                    <input type="text" class="form-control" name="dni" size="10" placeholder="NRO DNI">
+                    <button type="submit" class="btn btn-block btn-success btn-sm">Comprobar DNI</button>-
+  
+                  </form>
+                </div>              
+            </div>
+
+
+            <div class="row">
+              <!-- left column -->
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Nuevo Cliente</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+ 
+                  <form class="form-horizontal"  action="{{ url_for('admin_bp.admin_cm') }}" method="post" >
+                    {{ form_cliente.csrf_token  }}
+                    <div class="card-body">
+                      <div class="form-group row">
+                        <label for="dni" class="col-sm-2 col-form-label" >DNI</label>
+                        <div class="col-sm-10">
+                        {% if diccionario is defined %}    
+                        {{ form_cliente.dni(class_="form-control", value=diccionario.dni)}}
+                        {% for error in form_cliente.dni.errors %}
+                        <span style="color: red;">{{ error }}</span>
+                         {% endfor %}
+                        {% else %}
+                        {{ form_cliente.dni(class_="form-control")}}
+                        {% endif %}
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="nombre" class="col-sm-2 col-form-label" >Nombre</label>
+                        <div class="col-sm-10">
+                            {% if diccionario is defined %}    
+                            {{ form_cliente.nombre(class_="form-control", value=diccionario.nombre)}}
+                            {% for error in form_cliente.nombre.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                            {% else %}
+                            {{ form_cliente.nombre(class_="form-control")}}
+                            {% endif %}
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="apellidos" class="col-sm-2 col-form-label" >Apellido</label>
+                        <div class="col-sm-10">
+                            {% if diccionario is defined %}    
+                            {{ form_cliente.apellidos(class_="form-control", value=diccionario.apellidos)}}
+                            {% for error in form_cliente.apellidos.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                            {% else %}
+                            {{ form_cliente.apellidos(class_="form-control")}}
+                            {% endif %}
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="telefono" class="col-sm-2 col-form-label" >Telf/Cel</label>
+                        <div class="col-sm-10">
+                            {% if diccionario is defined %}    
+                            {{ form_cliente.telefono(class_="form-control", value=diccionario.telefono)}}
+                            {% for error in form_cliente.telefono.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                            {% else %}
+                            {{ form_cliente.telefono(class_="form-control")}}
+                            {% endif %}
+                        </div>
+                      </div>
+                      <div class="form-group row">
+                        <label for="email" class="col-sm-2 col-form-label" >Email</label>
+                        <div class="col-sm-10">
+                            {% if diccionario is defined %}    
+                            {{ form_cliente.email(class_="form-control", value=diccionario.email)}}
+                            {% for error in form_cliente.email.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                            {% else %}
+                            {{ form_cliente.email(class_="form-control")}}
+                            {% endif %}
+                        </div>
+                      </div>             
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                      {% if diccionario is defined %}  
+                      <button type="submit" class="btn btn-primary">Actualizar Cliente </button>
+                      {% else %}
+                      <button type="submit" class="btn btn-primary">Registrar </button>
+                      {% endif %}
+                    </div>
+                  </form>
+                </div>
+                  <!-- /.card -->            
+            </div> 
+
+            {% if diccionario is defined %}  
+            {% if diccionario.id %}
+            
+            <div class="col-md-6">
+              <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Nueva Mascota</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form  action="{{ url_for('admin_bp.admin_cm') }}" method="post">
+                    {{ form_mascota.csrf_token  }}
+                      <div class="card-body">
+                        {{form_mascota.dni(value=diccionario.id)}}
+                        <div class="form-group row">
+                          <label for="dni" class="col-sm-2 col-form-label" >Nombre</label>
+                          <div class="col-sm-10">
+                          {{ form_mascota.nombre(class_="form-control") }}
+                          {% for error in form_mascota.nombre.errors %}
+                          <span style="color: red;">{{ error }}</span>
+                           {% endfor %}
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label for="raza" class="col-sm-2 col-form-label" >Raza</label>
+                          <div class="col-sm-10">
+                          {{ form_mascota.raza(class_="form-control") }}
+                          {% for error in form_mascota.raza.errors %}
+                          <span style="color: red;">{{ error }}</span>
+                           {% endfor %}
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label for="tipo" class="col-sm-2 col-form-label" >Tipo</label>
+                          <div class="col-sm-10">
+                          {{ form_mascota.tipo(class_="form-control") }}
+                          {% for error in form_mascota.tipo.errors %}
+                          <span style="color: red;">{{ error }}</span>
+                           {% endfor %}
+                          </div>
+                        </div>
+                        <div class="form-group row">
+                          <label>Nacimiento:</label>
+                         {{ form_mascota.nacimiento }}
+                         {% for error in form_mascota.nacimiento.errors %}
+                         <span style="color: red;">{{ error }}</span>
+                          {% endfor %}
+                        </div>
+                        <div class="form-group row">
+                          <label for="peso" class="col-sm-2 col-form-label" >Peso</label>
+                          <div class="col-sm-4">
+                          {{ form_mascota.peso(class_="form-control") }}
+                          {% for error in form_mascota.peso.errors %}
+                          <span style="color: red;">{{ error }}</span>
+                           {% endfor %}
+                          </div>
+                          <b>Kg.</b>
+                        </div>    
+                        <div class="form-group row">
+                          <label for="observaciones" class="col-sm-8 col-form-label" >Observaciones</label>
+                          <div class="col-sm-10">
+                          {{ form_mascota.observaciones(class_="form-control" , rows=5) }}
+                          {% for error in form_mascota.observaciones.errors %}
+                          <span style="color: red;">{{ error }}</span>
+                           {% endfor %}
+                          </div>
+                        </div>       
+                      </div>
+                      <!-- /.card-body -->
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Registrar</button>
+                      </div>
+                    </form>
+                </div>
+              </div>
+
+            {% endif %}
+            {% endif %}
+            
+                <!-- /.card -->            
+          </div>  <!--END ROW-->
+          {% if mascotas is defined %}
+          {% if mascotas %}
+          <h3><center>Registro de Mascotas de Cliente </center></h3>
+          <div class="card-body table-responsive p-0">
+            <table class="table table-hover text-nowrap">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Tipo</th> 
+                  <th>Edad</th>  
+                  <th>Observaciones</th>               
+                </tr>
+              </thead>
+              <tbody>
+                {% for mascota in mascotas %}
+               <tr>
+                   <td> {{ mascota.nombre}} </td>
+                   <td> {{ mascota.tipo}} </td>
+                   <td> {{ mascota.nacimiento }} </td>
+                   <td> {{ mascota.observaciones }} </td>
+                   <td><a href="/editar_mascota/{{mascota.idmascota}}">Editar</a>  </td>
+                   <td><a href="/eliminar_mascota/{{mascota.idmascota}}">Eliminar</a>  </td>
+               </tr>
+               {% endfor %}
+        
+              </tbody>
+            </table>
+          </div>
+          {% else %}       
+           El Cliente Aun No Registra Mascotas
+          {% endif %}
+          {% endif %}
+
+          </div>
+        
+    </div>
+    
+    </section>
+
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Modulo de Atencion</h1> 
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content"> 
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
+
+        <div class="container-fluid">      
+        
+        <div class="row">
+        <div class="col-md-3">
+            <form action="{{ url_for('admin_bp.admin_atencion') }}" method="post" enctype="multipart/form-data"></form>
+            <input type="text">
+        </div>
+        <div class ="col-md-3">
+            <button type="submit" class="btn btn-block btn-success btn-sm">Comprobar DNI</button>
+            <br>&#8205; 
+        </form>
+        </div>
+      
+        </div>
+            <div class="row">
+              <!-- left column -->
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Nueva Atencion</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form  action="{{ url_for('admin_bp.admin_atencion') }}" method="post" enctype="multipart/form-data">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="dni">DNI</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="nombremascota">Mascota</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="sintomas">Sintomas</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="Receta">receta</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="ciudad">Informe</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="distrito">Observaciones</label>
+                      </div>
+                      <div class="form-group">
+                        <label for="direccion">Servicio</label>
+                      </div>     
+                      <div class="form-group">
+                        <label for="direccion">Otro Servicio</label>
+                      </div>  
+                      <div class="form-group">
+                        <label for="direccion">Costo Servicio</label>
+                      </div>                    
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Registrar</button>
+                    </div>
+                  </form>
+                </div>
+                  <!-- /.card -->            
+            </div> 
+          </div>
+        
+    </div>
+    
+    </section>
+    
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

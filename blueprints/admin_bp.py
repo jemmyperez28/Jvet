@@ -1,6 +1,7 @@
-from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto
-from models import Uservet , Vet
+from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
+import flask 
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd
+from models import Uservet , Vet , Cliente , Mascota
 from funciones import encriptar
 from config.db import db 
 import os
@@ -9,7 +10,7 @@ from werkzeug.utils import secure_filename
 #from config.keys import UPLOAD_FOLDER
 import imghdr
 from config.keys import extensiones
-from sqlalchemy import exc
+from sqlalchemy import exc 
 import datetime
 
 admin_bp = Blueprint('admin_bp',__name__)
@@ -62,13 +63,10 @@ def admin_info():
                 mensaje="Error , Contraseña Nueva No Coincide"
                 flash(mensaje)
                 return redirect(url_for('admin_bp.admin_info'))
-
         else:
             mensaje="Error Verifique Contraseña Antigua"
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_info'))
-
-
 
 @admin_bp.route('/admin_historial_atencion', methods=['GET','POST'])
 def admin_historial_atencion():
@@ -76,7 +74,6 @@ def admin_historial_atencion():
         #Valida nivel de usuario
         iduservet = session['iduservet']
         datos = Uservet.query.all()
-        print(datos)
         return render_template("/app/admin_historial_atencion.html",datos=datos)   
 
 @admin_bp.route('/admin_veterinaria', methods=['GET','POST'])
@@ -202,3 +199,157 @@ def admin_veterinaria():
         mensaje='Error Debe Seleccionar una Foto'
         flash(mensaje)
         return redirect(url_for('admin_bp.admin_veterinaria'))
+
+
+@admin_bp.route('/admin_atencion', methods=['GET','POST'])
+def admin_atencion():
+    return render_template("/app/admin_atencion.html")
+
+
+#@admin_bp.route('/editar_mascota/', methods=['GET','POST'] , defaults={'id':None})
+#@admin_bp.route('/editar_mascota/<int:id>', methods=['GET','POST'])
+
+@admin_bp.route('/admin_cm/', methods=['GET','POST'] )
+def admin_cm():
+    mensaje=''
+    vet =  session['iduservet'] 
+    form_cliente = ClienteForm()
+    form_mascota = MascotaForm()
+    form_dni = BuscarCM()
+    #testing
+    #fintesting
+    if  form_cliente.validate():
+        dni = form_cliente.dni.data
+        nombre = form_cliente.nombre.data 
+        apellidos = form_cliente.apellidos.data 
+        telefono = form_cliente.telefono.data 
+        email = form_cliente.email.data 
+        registradopor = vet
+        existe2 = Cliente.query.filter_by(dni=dni).first()
+        if existe2 is None: 
+            try:
+                nuevo_cliente = Cliente(nombre,apellidos,dni,email,telefono,registradopor)
+                db.session.add(nuevo_cliente)
+                db.session.commit()
+                mensaje = "Se Registro al Cliente: " + nuevo_cliente.nombre 
+                flash(mensaje)
+                return redirect(url_for('admin_bp.admin_cm'))
+            except exc.SQLAlchemyError as e:
+                mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+                flash(mensaje)
+                return redirect(url_for('admin_bp.admin_cm'))      
+        else: 
+            existe2.nombre=form_cliente.nombre.data 
+            existe2.apellido=form_cliente.apellidos.data 
+            existe2.telefono=form_cliente.telefono.data
+            existe2.email=form_cliente.email.data
+            try:
+                db.session.commit()
+                mensaje='Se Actualizaron los Datos del Cliente'
+                flash(mensaje)
+                return redirect(url_for('admin_bp.admin_dni',dni=existe2.dni))
+            except exc.SQLAlchemyError as e:
+                mensaje='Ocurrio Un Problema Reintente o Consulte con Soporte'
+                flash(mensaje)
+                return redirect(url_for('admin_bp.admin_cm'))
+    if form_mascota.validate_on_submit():
+        id_cliente = form_mascota.dni.data
+        nombre= form_mascota.nombre.data 
+        raza = form_mascota.raza.data
+        tipo = form_mascota.tipo.data 
+        nacimiento = form_mascota.nacimiento.data
+        peso = form_mascota.peso.data 
+        observaciones = form_mascota.observaciones.data
+        try:
+            micliente = Cliente.query.filter_by(idcliente=id_cliente).first()
+            print(micliente.dni)
+            nueva_mas = Mascota(id_cliente,nombre,tipo,raza,nacimiento,peso,observaciones)
+            db.session.add(nueva_mas)
+            db.session.commit()
+            mensaje = "Se Agrego a La Mascota : " + nueva_mas.nombre + " Del Cliente : " + micliente.nombre
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_dni', dni=micliente.dni))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_cm')) 
+
+        return redirect(url_for('admin_bp.admin_cm'))
+    return render_template("/app/admin_cm.html" , form_cliente = form_cliente , form_mascota = form_mascota)   
+
+@admin_bp.route('/admin_dni', methods=['GET','POST'])
+def admin_dni(result=None):
+    form_cliente = ClienteForm()
+    form_mascota = MascotaForm()
+    if request.args.get('dni',None):
+        result=request.args.get('dni')
+        existe = Cliente.query.filter_by(dni=result).first()  
+        if existe is None:
+            mensaje='El Cliente No Existe Porfavor Registrelo'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_cm'))
+        else:
+            mascotas = Mascota.query.filter_by(idcliente=existe.idcliente).all()
+            diccionario = {'dni' : existe.dni, 'nombre' : existe.nombre , 'apellidos' : existe.apellidos ,'telefono' : existe.telefono , 'email' : existe.email , 'id' : existe.idcliente }
+            return render_template("/app/admin_cm.html",diccionario=diccionario,form_cliente=form_cliente,form_mascota=form_mascota,mascotas=mascotas)
+    return redirect(url_for('admin_bp.admin_cm'))
+
+@admin_bp.route('/eliminar_mascota/<id>', methods=['GET','POST'])
+def eliminar_mascota(id):
+    idmascota = id
+    try:
+        datos =  Mascota.query.filter_by(idmascota=idmascota).first()
+        dueno = Cliente.query.filter_by(idcliente=datos.idcliente).first()
+        Mascota.query.filter_by(idmascota=idmascota).delete()
+        db.session.commit()
+        mensaje = "Mascota eliminada"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_dni', dni=dueno.dni))
+    except exc.SQLAlchemyError as e:
+        mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_cm')) 
+
+@admin_bp.route('/editar_mascota/', methods=['GET','POST'] , defaults={'id':None})
+@admin_bp.route('/editar_mascota/<int:id>', methods=['GET','POST'])
+def editar_mascota(id):
+    id_mascota = id 
+    form_mascota = MascotaFormUpd()
+    if request.method == "GET":  
+        datos = Mascota.query.filter_by(idmascota=id_mascota).first()
+        print("pase esto " + str(datos.idmascota))
+        return render_template("app/admin_updmascota.html" , form_mascota= form_mascota , datos=datos)
+    if form_mascota.validate_on_submit() and id is None:
+        idmascota = form_mascota.id_mascota.data
+        nombre = form_mascota.nombre.data 
+        raza = form_mascota.raza.data 
+        tipo = form_mascota.tipo.data 
+        nacimiento = form_mascota.nacimiento.data 
+        peso = form_mascota.peso.data 
+        observaciones = form_mascota.observaciones.data 
+        #Obtener DNI a partir de IDMASCOTA.
+        data = Cliente.query.with_entities(Cliente.dni).join(Mascota, Cliente.idcliente == Mascota.idcliente).filter_by(idmascota=idmascota).one()
+        try : 
+            mimascota = Mascota.query.filter_by(idmascota=idmascota).first()
+            mimascota.nombre = nombre 
+            mimascota.raza = raza 
+            mimascota.tipo = tipo 
+            mimascota.nacimiento = nacimiento 
+            mimascota.peso = peso 
+            mimascota.observaciones = observaciones 
+            db.session.commit()
+            mensaje = "Datos Actualizados"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_dni', dni=data.dni, form_mascota=form_mascota))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_cm')) 
+        return redirect(url_for('admin_bp.admin_dni', dni=data.dni, form_mascota=form_mascota))
+    return "test"
+        
+
+
+
+
+    

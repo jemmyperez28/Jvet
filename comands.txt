@@ -5,3 +5,12 @@ flask db init  : crea los archivos iniciales.
 flask db migrate : Crea la migracion o el archivo (upgrade y downgrade)
 flask db upgrade : usa el script de actualizacion de la version.
 flask db downgrade : regreso a la aanterior version (una vez regresado , eliminar el ultimo archivo .py de las carpeta de migraciones)
+
+
+
+
+Pues hay bastante diferencia. Con render_template ya has hecho toda la lógica y mandas a renderizar una plantilla entregando los datos necesarios ya establecidos y procesados.
+
+Con redirect(url_for()) estás enviando el control a un método que debe procesar la lógica del mismo, preparar los datos y por último hacer el render_template
+
+Sin render_template nunca verías una ruta, alguien tiene que renderizar la plantilla y básicamente es este método.

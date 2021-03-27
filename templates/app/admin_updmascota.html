@@ -1,0 +1,144 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"> Clientes / Mascotas </h1> 
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content"> 
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
+
+        <div class="container-fluid">      
+            <div class="row">
+              <!-- left column -->
+            
+              <div class="col-md-6">
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">Actualizar Mascota</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form  action="/editar_mascota" method="post">
+                      {{ form_mascota.csrf_token  }}
+                        <div class="card-body">
+                          {{form_mascota.id_mascota(value=datos.idmascota)}}
+                          <div class="form-group row">
+                            <label for="dni" class="col-sm-2 col-form-label" >Nombre</label>
+                            <div class="col-sm-10">
+                            {{ form_mascota.nombre(class_="form-control" ,value=datos.nombre) }}
+                            {% for error in form_mascota.nombre.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <label for="raza" class="col-sm-2 col-form-label" >Raza</label>
+                            <div class="col-sm-10">
+                            {{ form_mascota.raza(class_="form-control" ,value=datos.raza) }}
+                            {% for error in form_mascota.raza.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <label for="tipo" class="col-sm-2 col-form-label" >Tipo</label>
+                            <div class="col-sm-10">
+                            {{ form_mascota.tipo(class_="form-control",value=datos.tipo) }}
+                            {% for error in form_mascota.tipo.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            </div>
+                          </div>
+                          <div class="form-group row">
+                            <label>Nacimiento:</label>
+                           {{ form_mascota.nacimiento(class_="form-control" ,value=datos.nacimiento) }}
+                           {% for error in form_mascota.nacimiento.errors %}
+                           <span style="color: red;">{{ error }}</span>
+                            {% endfor %}
+                          </div>
+                          <div class="form-group row">
+                            <label for="peso" class="col-sm-2 col-form-label" >Peso</label>
+                            <div class="col-sm-4">
+                            {{ form_mascota.peso(class_="form-control",value=datos.peso) }}
+                            {% for error in form_mascota.peso.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            </div>
+                            <b>Kg.</b>
+                          </div>    
+                          <div class="form-group row">
+                            <label for="observaciones" class="col-sm-8 col-form-label" >Observaciones</label>
+                            <div class="col-sm-5">
+                            <textarea id="body" class_="form-control" name="observaciones" rows=5 cols=60 >{{ datos.observaciones }}</textarea>
+                             </div>
+                              <!--
+                            <label for="observaciones" class="col-sm-8 col-form-label" >Observaciones</label>
+                            <div class="col-sm-10">
+                            {{ form_mascota.observaciones(class_="form-control" , rows=5 , value=datos.observaciones) }}
+                            {% for error in form_mascota.observaciones.errors %}
+                            <span style="color: red;">{{ error }}</span>
+                             {% endfor %}
+                            </div>
+                            -->
+                          </div>       
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                          <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+            
+                <!-- /.card -->            
+          </div>  <!--END ROW-->
+    
+
+          </div>
+        
+    </div>
+    
+    </section>
+
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

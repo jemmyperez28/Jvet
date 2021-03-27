@@ -1,5 +1,6 @@
 from flask_wtf import FlaskForm 
-from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField
+from wtforms.fields.html5 import DateField
+from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField  , TextAreaField , HiddenField
 from wtforms.validators import InputRequired
 
 class RegistroUsuario(FlaskForm):
@@ -40,7 +41,36 @@ class Veterinaria(FlaskForm):
 
 class VeterinariaFoto(FlaskForm):
     foto = FileField('foto',validators=[InputRequired()])
-    
+
+class ClienteForm(FlaskForm):
+    dni = IntegerField('dni',validators=[InputRequired()])
+    email = StringField('email')
+    nombre = StringField('nombre',validators=[InputRequired()])
+    apellidos = StringField('apellidos',validators=[InputRequired()])
+    telefono = StringField('telefono',validators=[InputRequired()])
+
+class MascotaForm(FlaskForm):
+    dni = HiddenField('dni',validators=[InputRequired()])
+    nombre = StringField('nombre',validators=[InputRequired()])
+    tipo = StringField('tipo')
+    raza = StringField('raza')
+    nacimiento = DateField('nacimiento',validators=[InputRequired()])
+    peso = StringField('peso')
+    observaciones = TextAreaField('observaciones')
+class MascotaFormUpd(FlaskForm):
+    id_mascota = HiddenField('id_mascota',validators=[InputRequired()])
+    nombre = StringField('nombre')
+    tipo = StringField('tipo')
+    raza = StringField('raza')
+    nacimiento = DateField('nacimiento')
+    peso = StringField('peso')
+    observaciones = TextAreaField('observaciones')
+
+class BuscarCM(FlaskForm):
+    dni = IntegerField('dni',validators=[InputRequired()])
+    submit = SubmitField('Comprobar DNI')
+
+
 
 
 
