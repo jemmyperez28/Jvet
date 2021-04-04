@@ -17,6 +17,7 @@ class Vet(db.Model):
     uservets = db.relationship('Uservet',backref='vet',lazy=True)
     relacionservicios = db.relationship('Servicios',backref='vet',lazy=True)
     relacionatencion = db.relationship('Atencion',backref='vet',lazy=True)
+    relacionempleado = db.relationship('Empleado',backref='vet',lazy=True)
 
     def __init__(self,nombre,logo,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado):
         self.nombre = nombre
@@ -164,8 +165,10 @@ class Atencion(db.Model):
     total = db.Column(db.Float)
     idcliente = db.Column(db.Integer,db.ForeignKey('cliente.idcliente'))
     idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    atendido_por = db.Column(db.String(100))
+    creado_por = db.Column(db.String(100))
     relacionatenciondetalle = db.relationship('AtencionDetalle',backref='atencion',lazy=True)
-    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet):
+    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por):
         self.fecha_atencion = fecha_atencion 
         self.receta = receta
         self.sintomas = sintomas
@@ -175,8 +178,30 @@ class Atencion(db.Model):
         self.total = total
         self.idcliente = idcliente
         self.idvet = idvet
+        self.atendido_por = atendido_por
+        self.creado_por = creado_por
 
-
+class Empleado(db.Model):
+    idempleado = db.Column(db.Integer, primary_key = True)
+    nombre = db.Column(db.String(300))
+    dni = db.Column(db.String(100))
+    password = db.Column(db.String(100))
+    atencion = db.Column(db.String(1))
+    petshop = db.Column(db.String(1))
+    reservaciones = db.Column(db.String(1))
+    servicios = db.Column(db.String(1))
+    productos = db.Column(db.String(1))
+    idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    def __init__(self,nombre,dni,password,atencion,petshop,reservaciones,servicios,productos):
+        self.nombre = nombre 
+        self.dni = dni
+        self.password = password
+        self.atencion = atencion
+        self.petshop = petshop
+        self.reservaciones=reservaciones
+        self.servicios = servicios
+        self.productos = productos
+        self.idvet = idvet
 
 
 

@@ -68,6 +68,7 @@ def login_usuario():
             if password == usuario.password:
                 session['loggedin'] = True 
                 session['iduservet'] = usuario.iduservet
+                session['vet_id'] = usuario.vet_id
                 session['dni'] = usuario.dni
                 session['nombre'] = usuario.nombre
                 session['tipo_uservet'] = usuario.tipo_uservet

@@ -1,7 +1,7 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd
-from models import Uservet , Vet , Cliente , Mascota
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI
+from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle
 from funciones import encriptar
 from config.db import db 
 import os
@@ -201,14 +201,6 @@ def admin_veterinaria():
         return redirect(url_for('admin_bp.admin_veterinaria'))
 
 
-@admin_bp.route('/admin_atencion', methods=['GET','POST'])
-def admin_atencion():
-    return render_template("/app/admin_atencion.html")
-
-
-#@admin_bp.route('/editar_mascota/', methods=['GET','POST'] , defaults={'id':None})
-#@admin_bp.route('/editar_mascota/<int:id>', methods=['GET','POST'])
-
 @admin_bp.route('/admin_cm/', methods=['GET','POST'] )
 def admin_cm():
     mensaje=''
@@ -216,8 +208,7 @@ def admin_cm():
     form_cliente = ClienteForm()
     form_mascota = MascotaForm()
     form_dni = BuscarCM()
-    #testing
-    #fintesting
+
     if  form_cliente.validate():
         dni = form_cliente.dni.data
         nombre = form_cliente.nombre.data 
@@ -231,9 +222,9 @@ def admin_cm():
                 nuevo_cliente = Cliente(nombre,apellidos,dni,email,telefono,registradopor)
                 db.session.add(nuevo_cliente)
                 db.session.commit()
-                mensaje = "Se Registro al Cliente: " + nuevo_cliente.nombre 
+                mensaje = "Cliente Registrado Correctamente"  
                 flash(mensaje)
-                return redirect(url_for('admin_bp.admin_cm'))
+                return redirect(url_for('admin_bp.admin_dni', dni=nuevo_cliente.dni))
             except exc.SQLAlchemyError as e:
                 mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
                 flash(mensaje)
@@ -273,9 +264,68 @@ def admin_cm():
             mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_cm')) 
-
         return redirect(url_for('admin_bp.admin_cm'))
     return render_template("/app/admin_cm.html" , form_cliente = form_cliente , form_mascota = form_mascota)   
+
+@admin_bp.route('/admin_atencion', methods=['GET','POST'])
+def admin_atencion():
+    iduservet =  session['iduservet'] 
+    form_dni = AtencionDNI()
+    form_atencion = AtencionForm()
+    if request.method == "POST":
+        print(form_atencion.mascota)
+        token = form_atencion.csrf_token.data
+        id_cliente = form_atencion.id_cliente.data 
+        mascota = form_atencion.mascota.data 
+        sintomas = form_atencion.sintomas.data 
+        informe = form_atencion.informe.data 
+        receta = form_atencion.receta.data 
+        observaciones = form_atencion.observaciones.data
+        fecha_atencion = None 
+        total = None
+        atendido_por = form_atencion.atendido_por.data
+        usuario = Uservet.query.filter_by(iduservet=iduservet).first()
+        creado_por = usuario.nombre
+        try:
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por)
+            db.session.add(nueva_atencion)
+            db.session.commit()
+            mensaje = "Atencion Creada !"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion'))
+    
+    return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion)
+
+
+@admin_bp.route('/admin_dni_atencion', methods=['GET','POST'])
+def admin_dni_atencion(result=None):
+    idvet = session['vet_id']
+    mensaje=''
+    form_atencion = AtencionForm()
+    if request.args.get('dni',None):
+        result = request.args.get('dni')
+        existe = Cliente.query.filter_by(dni=result).first()
+        if existe is None:
+           mensaje='El Cliente No Existe Porfavor Registre el DNI : ' + result
+           flash(mensaje)
+           return redirect(url_for('admin_bp.admin_cm'))
+        else:
+            mascotas = Mascota.query.filter_by(idcliente=existe.idcliente).all()
+            if not mascotas:
+                mensaje=' Porfavor Registre Al menos una Mascota del Cliente ' + str(existe.dni) + '  ' + str(existe.nombre)
+                flash(mensaje)
+                return redirect(url_for('admin_bp.admin_cm')) 
+            form_atencion.buscar_mascota(existe.idcliente)
+            form_atencion.buscar_empleado(idvet)
+            diccionario = {'dni' : existe.dni, 'nombre' : existe.nombre , 'apellidos' : existe.apellidos, 'id_cliente' : existe.idcliente }
+            mensaje='Cliente encontrado'
+            flash(mensaje)
+            return render_template("/app/admin_atencion.html",diccionario=diccionario,form_atencion=form_atencion,mascotas=mascotas)
+    return redirect(url_for('admin_bp.admin_atencion'))
 
 @admin_bp.route('/admin_dni', methods=['GET','POST'])
 def admin_dni(result=None):
@@ -285,7 +335,7 @@ def admin_dni(result=None):
         result=request.args.get('dni')
         existe = Cliente.query.filter_by(dni=result).first()  
         if existe is None:
-            mensaje='El Cliente No Existe Porfavor Registrelo'
+            mensaje='El Cliente No Existe Porfavor Registre el DNI : ' + result
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_cm'))
         else:
@@ -346,7 +396,7 @@ def editar_mascota(id):
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_cm')) 
         return redirect(url_for('admin_bp.admin_dni', dni=data.dni, form_mascota=form_mascota))
-    return "test"
+    return "Porfavor Reinicie la aplicacion"
         
 
 

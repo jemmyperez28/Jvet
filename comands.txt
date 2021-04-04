@@ -14,3 +14,10 @@ Pues hay bastante diferencia. Con render_template ya has hecho toda la lógica y
 Con redirect(url_for()) estás enviando el control a un método que debe procesar la lógica del mismo, preparar los datos y por último hacer el render_template
 
 Sin render_template nunca verías una ruta, alguien tiene que renderizar la plantilla y básicamente es este método.
+
+
+
+
+
+data = Cliente.query.with_entities(Cliente.dni).join(Mascota, Cliente.idcliente == Mascota.idcliente).add_columns(Cliente.dni).filter_by(idmascota=idmascota).one()
+resultado : (47228271, 47228271)
