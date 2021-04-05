@@ -191,8 +191,9 @@ class Empleado(db.Model):
     reservaciones = db.Column(db.String(1))
     servicios = db.Column(db.String(1))
     productos = db.Column(db.String(1))
+    activo = db.Column(db.String(2))
     idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
-    def __init__(self,nombre,dni,password,atencion,petshop,reservaciones,servicios,productos):
+    def __init__(self,nombre,dni,password,atencion,petshop,reservaciones,servicios,productos,activo,idvet):
         self.nombre = nombre 
         self.dni = dni
         self.password = password
@@ -201,6 +202,7 @@ class Empleado(db.Model):
         self.reservaciones=reservaciones
         self.servicios = servicios
         self.productos = productos
+        self.activo = activo
         self.idvet = idvet
 
 

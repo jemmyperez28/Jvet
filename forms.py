@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms.fields.html5 import DateField
 from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField  , TextAreaField , HiddenField
 from wtforms.validators import InputRequired
-from models import Mascota , Empleado
+from models import Mascota , Empleado , Uservet
 
 class RegistroUsuario(FlaskForm):
     dni = IntegerField('dni')
@@ -90,6 +90,8 @@ class AtencionForm(FlaskForm):
     
     def buscar_empleado(self,idvet):
         self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
+
+        
 
 
 

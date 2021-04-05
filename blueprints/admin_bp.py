@@ -1,7 +1,7 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI
-from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle
+from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado
 from funciones import encriptar
 from config.db import db 
 import os
@@ -126,7 +126,7 @@ def admin_veterinaria():
                 return redirect(url_for('admin_bp.admin_veterinaria'))   
             nombre_unico = str(iduservet) + '_logo' + hora + extension[1] 
         if us_vet is None:
-            nuevo_vet = Vet(nombre,nombre_unico,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado)   
+            nuevo_vet = Vet(nombre,nombre_unico,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado)
             try:
                 db.session.add(nuevo_vet)
                 db.session.flush()
@@ -273,7 +273,6 @@ def admin_atencion():
     form_dni = AtencionDNI()
     form_atencion = AtencionForm()
     if request.method == "POST":
-        print(form_atencion.mascota)
         token = form_atencion.csrf_token.data
         id_cliente = form_atencion.id_cliente.data 
         mascota = form_atencion.mascota.data 
