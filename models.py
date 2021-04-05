@@ -167,8 +167,9 @@ class Atencion(db.Model):
     idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
     atendido_por = db.Column(db.String(100))
     creado_por = db.Column(db.String(100))
+    estado_atencion = db.Column(db.String(100))
     relacionatenciondetalle = db.relationship('AtencionDetalle',backref='atencion',lazy=True)
-    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por):
+    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion):
         self.fecha_atencion = fecha_atencion 
         self.receta = receta
         self.sintomas = sintomas
@@ -180,6 +181,7 @@ class Atencion(db.Model):
         self.idvet = idvet
         self.atendido_por = atendido_por
         self.creado_por = creado_por
+        self.estado_atencion = estado_atencion
 
 class Empleado(db.Model):
     idempleado = db.Column(db.Integer, primary_key = True)

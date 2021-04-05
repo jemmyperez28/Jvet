@@ -16,8 +16,6 @@ Con redirect(url_for()) estás enviando el control a un método que debe procesa
 Sin render_template nunca verías una ruta, alguien tiene que renderizar la plantilla y básicamente es este método.
 
 
-
-
-
 data = Cliente.query.with_entities(Cliente.dni).join(Mascota, Cliente.idcliente == Mascota.idcliente).add_columns(Cliente.dni).filter_by(idmascota=idmascota).one()
 resultado : (47228271, 47228271)
+Nota : El Query sin .all() o .first() o .one() NO FUNCIONA.

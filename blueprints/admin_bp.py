@@ -10,7 +10,7 @@ from werkzeug.utils import secure_filename
 #from config.keys import UPLOAD_FOLDER
 import imghdr
 from config.keys import extensiones
-from sqlalchemy import exc 
+from sqlalchemy import exc , desc
 import datetime
 
 admin_bp = Blueprint('admin_bp',__name__)
@@ -285,8 +285,9 @@ def admin_atencion():
         atendido_por = form_atencion.atendido_por.data
         usuario = Uservet.query.filter_by(iduservet=iduservet).first()
         creado_por = usuario.nombre
+        estado_atencion = "abierto"
         try:
-            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por)
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion)
             db.session.add(nueva_atencion)
             db.session.commit()
             mensaje = "Atencion Creada !"
@@ -323,8 +324,10 @@ def admin_dni_atencion(result=None):
             diccionario = {'dni' : existe.dni, 'nombre' : existe.nombre , 'apellidos' : existe.apellidos, 'id_cliente' : existe.idcliente }
             mensaje='Cliente encontrado'
             flash(mensaje)
-            return render_template("/app/admin_atencion.html",diccionario=diccionario,form_atencion=form_atencion,mascotas=mascotas)
-    return redirect(url_for('admin_bp.admin_atencion'))
+            return render_template("/app/admin_atencion.html",diccionario=diccionario,form_atencion=form_atencion)
+    atenciones = Atencion.query.order_by(Atencion.fecha_atencion.desc()).filter_by(idvet=idvet).limit(5).all()
+    #return redirect(url_for('admin_bp.admin_atencion',atenciones=atenciones))
+    return render_template("app/admin_atencion.html",atenciones=atenciones,form_atencion=form_atencion)
 
 @admin_bp.route('/admin_dni', methods=['GET','POST'])
 def admin_dni(result=None):
