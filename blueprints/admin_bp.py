@@ -270,8 +270,10 @@ def admin_cm():
 @admin_bp.route('/admin_atencion', methods=['GET','POST'])
 def admin_atencion():
     iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
     form_dni = AtencionDNI()
     form_atencion = AtencionForm()
+    estado_atencion="abierto"
     if request.method == "POST":
         token = form_atencion.csrf_token.data
         id_cliente = form_atencion.id_cliente.data 
@@ -281,7 +283,7 @@ def admin_atencion():
         receta = form_atencion.receta.data 
         observaciones = form_atencion.observaciones.data
         fecha_atencion = None 
-        total = None
+        total = 0
         atendido_por = form_atencion.atendido_por.data
         usuario = Uservet.query.filter_by(iduservet=iduservet).first()
         creado_por = usuario.nombre
@@ -297,14 +299,15 @@ def admin_atencion():
             mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_atencion'))
-    
-    return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion)
+    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
+    return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion,atenciones=atenciones)
 
 
 @admin_bp.route('/admin_dni_atencion', methods=['GET','POST'])
 def admin_dni_atencion(result=None):
     idvet = session['vet_id']
     mensaje=''
+    estado_atencion="abierto"
     form_atencion = AtencionForm()
     if request.args.get('dni',None):
         result = request.args.get('dni')
@@ -325,8 +328,7 @@ def admin_dni_atencion(result=None):
             mensaje='Cliente encontrado'
             flash(mensaje)
             return render_template("/app/admin_atencion.html",diccionario=diccionario,form_atencion=form_atencion)
-    atenciones = Atencion.query.order_by(Atencion.fecha_atencion.desc()).filter_by(idvet=idvet).limit(5).all()
-    #return redirect(url_for('admin_bp.admin_atencion',atenciones=atenciones))
+    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
     return render_template("app/admin_atencion.html",atenciones=atenciones,form_atencion=form_atencion)
 
 @admin_bp.route('/admin_dni', methods=['GET','POST'])
@@ -369,7 +371,6 @@ def editar_mascota(id):
     form_mascota = MascotaFormUpd()
     if request.method == "GET":  
         datos = Mascota.query.filter_by(idmascota=id_mascota).first()
-        print("pase esto " + str(datos.idmascota))
         return render_template("app/admin_updmascota.html" , form_mascota= form_mascota , datos=datos)
     if form_mascota.validate_on_submit() and id is None:
         idmascota = form_mascota.id_mascota.data
@@ -401,7 +402,21 @@ def editar_mascota(id):
     return "Porfavor Reinicie la aplicacion"
         
 
+@admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
+@admin_bp.route('/editar_atencion/<int:id>', methods=['GET','POST'])
+def editar_atencion(id):
+    id_atencion = id 
+    if request.method == "GET":  
+        datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
+        #datos_atencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+        print(datos)
+        return render_template("app/admin_editar_atencion.html" , datos=datos)
+    return "test"
 
-
+@admin_bp.route('/terminar_atencion/<int:id>', methods=['GET','POST'])
+def terminar_atencion(id):
+    id_atencion = id 
+    print(id_atencion)
+    return "test"
 
     

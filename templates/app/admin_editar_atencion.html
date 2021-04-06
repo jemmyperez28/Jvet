@@ -1,0 +1,119 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0"> Añadir Items a la Atencion </h1> 
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+    <!-- Main content -->
+    <section class="content"> 
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
+
+        <div class="container-fluid">     
+            
+            <div class="row">
+                <div class="col-md-10">
+                    <div class="card">
+                        <div class="card-header">
+                          <h3 class="card-title">Cliente : </h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body p-0">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>Tipo</th>
+                                <th>Nombre</th>
+                                <th>Cant</th>
+                                <th>Precio U.</th>
+                                <th>SubT</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                                {% if datos %}
+                                {% for dato in datos %}
+                               <tr>
+                                   <td> {{ dato.tipo}}</td>
+                                   <td> {{ dato.nombre}} </td>
+                                   <td> {{ dato.cantidad }} </td>
+                                   <td> {{ dato.precio_unitario }} </td>
+                                   <td> {{ dato.subtotal }} </td>
+                               </tr>
+                               {% endfor %} 
+                               {% endif %}
+                              </tbody>
+                          </table>
+                        </div>
+                        <!-- /.card-body -->
+                      </div>
+                </div>      
+            </div>
+
+            <div class="row">
+              <!-- left column -->
+            
+              <div class="col-md-4">
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">Atencion</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form  action="/actualizar_atencion" method="post">
+                    <div class="card-footer">
+                          <button type="submit" class="btn btn-primary">Actualizar</button>
+                        </div>
+                      </form>
+                  </div>
+                </div>
+            
+                <!-- /.card -->            
+          </div>  <!--END ROW-->
+    
+
+          </div>
+        
+    </div>
+    
+    </section>
+
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

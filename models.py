@@ -144,14 +144,18 @@ class Mascota(db.Model):
 
 class AtencionDetalle(db.Model):
     idatenciondetalle = db.Column(db.Integer, primary_key = True)
-    servicio = db.Column(db.String(100))
-    otro = db.Column(db.String(250))
-    costo = db.Column(db.Float)
+    tipo = db.Column(db.String(100))
+    nombre = db.Column(db.String(250))
+    cantidad = db.Column(db.Integer)
+    precio_unitario = db.Column(db.Float)
+    subtotal = db.Column(db.Float)
     idatencion = db.Column(db.Integer,db.ForeignKey('atencion.idatencion'))
-    def __init__(self,servicio,otro,costo,idatencion):
-        self.servicio = servicio 
-        self.otro = otro
-        self.costo = costo
+    def __init__(self,tipo,nombre,cantidad,precio_unitario,subtotal,idatencion):
+        self.tipo = tipo 
+        self.nombre = nombre
+        self.cantidad = cantidad
+        self.precio_unitario = precio_unitario
+        self.subtotal = subtotal
         self.idatencion = idatencion
 
 class Atencion(db.Model):

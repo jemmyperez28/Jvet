@@ -174,46 +174,67 @@
                 <!-- /.card -->            
           </div> 
          </div>
+         </div>
 
-         <div class="row">         
-           <div class="col-md-12">
-            {% if atenciones is defined %}
-            {% if atenciones %}
-            <h3><center> Ultimas Atenciones </center></h3>
-            <div class="card-body table-responsive p-0">
-              <table class="table table-hover text-nowrap">
-                <thead>
+    </section>
+    
+    {% if atenciones is defined %}
+    {% if atenciones %}
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header">
+            <h3 class="card-title">Ultimas Atenciones </h3>
+            <div class="card-tools">
+              <div class="input-group input-group-sm" style="width: 150px;">
+                <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+
+                <div class="input-group-append">
+                  <button type="submit" class="btn btn-default">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.card-header -->
+          <div class="card-body table-responsive p-0">
+            <table class="table table-hover text-nowrap">
+              <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Tipo</th> 
-                    <th>Edad</th>  
-                    <th>Observaciones</th>               
+                    <th>Fecha de Atencion</th>
+                    <th>Cliente</th> 
+                    <th>Mascota</th>  
+                    <th>Creado Por</th> 
+                    <th>Total</th> 
+                    <th>Estado</th>                
                   </tr>
                 </thead>
                 <tbody>
                   {% for atencion in atenciones %}
                  <tr>
                      <td> {{ atencion.fecha_atencion}}</td>
-                     <td> {{ atencion.nombremascota}} </td>
-                     <td> {{ atencion.atendido_por }} </td>
-                     <td> {{ atencion.informe }} </td>
-                     <td><a href="">Editar</a>  </td>
-                     <td><a href="">Eliminar</a>  </td>
+                     <td> {{ atencion.nombre}} </td>
+                     <td> {{ atencion.nombremascota }} </td>
+                     <td> {{ atencion.creado_por }} </td>
+                     <td> {{ atencion.total }} </td>
+                     <td> {{ atencion.estado_atencion }} </td>
+                     <td><a href="/editar_atencion/{{atencion.idatencion}}">Añadir Items</a>  </td>
+                     <td><a href="/terminar_atencion/{{atencion.idatencion}}">Terminar Atencion</a>  </td>
                  </tr>
                  {% endfor %} 
                 </tbody>
-              </table>
-            </div>
-            {% else %}       
-             No se Registran Atenciones para el dia de Hoy
-            {% endif %}
-            {% endif %}
-  
-            </div>
-           </div>
-         </div>
+            </table>
+          </div>
+          <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+      </div>
+    </div>
+    {% endif %}
+    {% endif %}
 
-    </section>
+
     
 <!-- /.content -->
   <!-- /.content-wrapper -->

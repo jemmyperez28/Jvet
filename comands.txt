@@ -17,5 +17,7 @@ Sin render_template nunca verías una ruta, alguien tiene que renderizar la plan
 
 
 data = Cliente.query.with_entities(Cliente.dni).join(Mascota, Cliente.idcliente == Mascota.idcliente).add_columns(Cliente.dni).filter_by(idmascota=idmascota).one()
+atenciones = Atencion.query.with_entities(Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.atendido_por,Atencion.estado_atencion).filter_by(idvet=idvet).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
+
 resultado : (47228271, 47228271)
 Nota : El Query sin .all() o .first() o .one() NO FUNCIONA.
