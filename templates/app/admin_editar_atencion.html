@@ -59,22 +59,22 @@
                           <table class="table table-striped">
                             <thead>
                               <tr>
-                                <th>Tipo</th>
-                                <th>Nombre</th>
+                                <th>Items</th>
                                 <th>Cant</th>
                                 <th>Precio U.</th>
                                 <th>SubT</th>
+                                <th>Accion</th>
                               </tr>
                             </thead>
                             <tbody>
                                 {% if datos %}
                                 {% for dato in datos %}
                                <tr>
-                                   <td> {{ dato.tipo}}</td>
                                    <td> {{ dato.nombre}} </td>
                                    <td> {{ dato.cantidad }} </td>
                                    <td> {{ dato.precio_unitario }} </td>
                                    <td> {{ dato.subtotal }} </td>
+                                   <td><a href="/eliminar_atenciondetalle/{{dato.idatenciondetalle}}">Eliminar</a>  </td>
                                </tr>
                                {% endfor %} 
                                {% endif %}
@@ -88,31 +88,186 @@
 
             <div class="row">
               <!-- left column -->
-            
-              <div class="col-md-4">
-                <div class="card card-primary">
-                    <div class="card-header">
-                      <h3 class="card-title">Atencion</h3>
-                    </div>
-                    <!-- /.card-header -->
-                    <!-- form start -->
-                    <form  action="/actualizar_atencion" method="post">
-                    <div class="card-footer">
-                          <button type="submit" class="btn btn-primary">Actualizar</button>
-                        </div>
-                      </form>
-                  </div>
-                </div>
-            
-                <!-- /.card -->            
-          </div>  <!--END ROW-->
-    
+              <div class="custom-control custom-radio" class="col-sm-5">
+                <input class="custom-control-input" id="servicio" type="radio"  value="servicio" onclick="servicio(this);"  name="customRadio" style="margin:10px" checked>
+                <label for="servicio" class="custom-control-label">Servicio</label>
+              </div>
+              <br>
 
+  
+              <div class="custom-control custom-radio" class="col-sm-5">
+                <input class="custom-control-input" id="producto" type="radio" value="producto"  onclick="producto(this);" name="customRadio" >
+                <label for="producto" class="custom-control-label">Producto</label> 
+              </div>
+
+              <br>
+              
+              <div class="custom-control custom-radio" class="col-sm-5">
+                <input class="custom-control-input" id="otros" type="radio"  value="otros" onclick="otros(this);" name="customRadio" >
+                <label for="otros" class="custom-control-label">Otros</label>
+              </div>
+            </div>
+            <br>
+            </div>
+            
+          <div class="row">
+            <div class="col-md-5">
+            <div class="form-servicio">
+              <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Agregar Servicio</h3>
+              </div>
+              <div class="card-body"> 
+              <form  action="{{ url_for('admin_bp.admin_atenciondetalleadd') }}" method="post">
+                {{ form_servicio.csrf_token }}
+                {{ form_servicio.nombre2 }}
+                {{ form_servicio.idatencion(value=id_atencion) }}
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3">Servicio</label>
+                  <div class="col-md-9">
+                   
+                  {{form_servicio.precio( class_="form-control" ,id="precio" , onchange="val()" )}}
+                </div>
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3" >Precio</label>   
+                  <div class="col-md-4">
+                  {{ form_servicio.nombre(class_="form-control" , id="nombre" , readonly=True) }} 
+                   </div>          
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3"> Cantidad </label>   
+                <div class="col-md-4">       
+                  {{ form_servicio.cantidad(class_="form-control") }}
+                </div>               
+              </div>
+
+              <div class="card-footer">
+
+                    <button type="submit" class="btn btn-primary"> Agregar </button>
+                </div>
+                </form>
+                </div>
+            </div>
           </div>
-        
+          <div class="form-producto" style="display: none">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Agregar Producto</h3>
+              </div>
+              <div class="card-body"> 
+                <form  action="{{ url_for('admin_bp.admin_atenciondetalleprod') }}" method="post">
+                {{ form_producto.csrf_token }}
+                {{ form_producto.nombre2_producto }}
+                {{ form_producto.idatencion_producto(value=id_atencion) }}
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3">Producto</label>
+                  <div class="col-md-9">
+                  {{form_producto.precio_producto(class_="form-control" , id="precio_producto" , onchange="val_productos()")}}
+                </div>
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3" >Precio</label>   
+                  <div class="col-md-4">
+                  {{ form_producto.nombre_producto(class_="form-control" , id="nombre_producto" , readonly=True) }} 
+                   </div>          
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3" >Cantidad</label>   
+                <div class="col-md-4">       
+                  {{ form_producto.cantidad_producto(class_="form-control") }}
+                </div>
+              </div>
+              <div class="card-footer">
+                    <button type="submit" class="btn btn-primary"> Agregar Producto </button>
+                </div>
+                </form>
+            </div>
+          </div>
+          </div>
+          <div class="form-otros" style="display: none">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Otros</h3>
+              </div>
+              <div class="card-body"> 
+                <form  action="{{ url_for('admin_bp.admin_atenciondetalleotro') }}" method="post">
+                {{ form_otro.csrf_token }}
+                {{ form_otro.idatencion_otro(value=id_atencion) }}
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3"> Item </label>
+                  <div class="col-md-9">
+                  {{form_otro.otro(class_="form-control" )}}
+                </div>
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3" >Precio U.</label>   
+                  <div class="col-md-4">
+                    {{form_otro.precio(class_="form-control" )}}
+                  </div>          
+                </div>
+                <div class="form-group row">
+                  <label for="dni" class="col-md-3" >Cantidad</label>   
+                <div class="col-md-4">       
+                    {{form_otro.cantidad(class_="form-control" )}}
+                </div>
+              </div>
+
+              <div class="card-footer">
+                    <button type="submit" class="btn btn-primary"> Agregar Item </button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div> 
+        </div>
+          </div>       
+          
     </div>
-    
     </section>
+
+<script type="text/javascript" >
+
+function producto(myRadio)
+{
+  $('.form-producto').show()
+  $('.form-servicio').hide()
+  $('.form-otros').hide()
+}
+
+function servicio(myRadio)
+{
+  $('.form-producto').hide()
+  $('.form-servicio').show()
+  $('.form-otros').hide()
+}
+
+function otros(myRadio)
+{
+  $('.form-producto').hide()
+  $('.form-servicio').hide()
+  $('.form-otros').show()
+}
+
+function val() {
+  d = document.getElementById("precio").value;
+  var seleccion = document.getElementById("precio");
+  document.getElementById("nombre").value=d;
+  texto = seleccion.options[seleccion.selectedIndex].text;
+  document.getElementById("nombre2").value=texto;
+}
+
+function val_productos() {
+  d = document.getElementById("precio_producto").value;
+  var seleccion = document.getElementById("precio_producto");
+  document.getElementById("nombre_producto").value=d;
+  texto = seleccion.options[seleccion.selectedIndex].text;
+  document.getElementById("nombre2_producto").value=texto;
+}
+
+
+    </script>
+
 
 <!-- /.content -->
   <!-- /.content-wrapper -->

@@ -18,6 +18,7 @@ class Vet(db.Model):
     relacionservicios = db.relationship('Servicios',backref='vet',lazy=True)
     relacionatencion = db.relationship('Atencion',backref='vet',lazy=True)
     relacionempleado = db.relationship('Empleado',backref='vet',lazy=True)
+    relacionproductos = db.relationship('Productos',backref='vet',lazy=True)
 
     def __init__(self,nombre,logo,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado):
         self.nombre = nombre
@@ -105,6 +106,21 @@ class Servicios(db.Model):
         self.precio = precio
         self.detalles = detalles
         self.idvet = idvet
+
+class Productos(db.Model):
+    idProducto = db.Column(db.Integer, primary_key = True)
+    nombre = db.Column(db.String(250))
+    descripcion = db.Column(db.String(250))
+    precio = db.Column(db.Float)
+    stock = db.Column(db.Integer)
+    idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    def __init__(self,nombre,descripcion,precio,stock,idvet):
+        self.nombre = nombre 
+        self.descripcion = descripcion
+        self.precio = precio
+        self.stock = stock
+        self.idvet = idvet
+
 
 class Cliente(db.Model):
     idcliente = db.Column(db.Integer, primary_key = True)

@@ -1,7 +1,7 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI
-from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm
+from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios
 from funciones import encriptar
 from config.db import db 
 import os
@@ -405,12 +405,18 @@ def editar_mascota(id):
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
 @admin_bp.route('/editar_atencion/<int:id>', methods=['GET','POST'])
 def editar_atencion(id):
+    form_servicio=AtencionServicioForm()
+    form_producto=AtencionProductoForm()
+    form_otro=AtencionOtroForm()
+    idvet = session['vet_id']
     id_atencion = id 
     if request.method == "GET":  
         datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
-        #datos_atencion = Atencion.query.filter_by(idatencion=id_atencion).first()
-        print(datos)
-        return render_template("app/admin_editar_atencion.html" , datos=datos)
+
+        servicios = Servicios.query.filter_by(idvet=idvet).all()
+        form_servicio.buscar_servicios(idvet)
+        form_producto.buscar_productos(idvet)
+        return render_template("app/admin_editar_atencion.html" , datos=datos , id_atencion=id_atencion,servicios=servicios , form_servicio=form_servicio , form_producto=form_producto, form_otro=form_otro)
     return "test"
 
 @admin_bp.route('/terminar_atencion/<int:id>', methods=['GET','POST'])
@@ -419,4 +425,199 @@ def terminar_atencion(id):
     print(id_atencion)
     return "test"
 
+
+@admin_bp.route('/admin_atenciondetalleadd', methods=['GET','POST'])
+def admin_atenciondetalleadd():
+    tipo ='Servicio'
+    mensaje=''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    form_servicio=AtencionServicioForm()
+    form_producto=AtencionProductoForm()
+    if request.method =='POST':
+        nombre = form_servicio.nombre2.data 
+        cantidad = form_servicio.cantidad.data 
+        preciou = form_servicio.precio.data
+        id_atencion = form_servicio.idatencion.data 
+        if nombre is None or cantidad is None or preciou is None:
+            mensaje='Error , Debe Completar Todos los Campos.'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        subt = cantidad * preciou 
+        try:
+            nuevo_dtlatencion = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
+            db.session.add(nuevo_dtlatencion)
+            db.session.commit()
+            mensaje = "Item Añadido"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        return "Reinicie Aplicacion o Consulte con Soporte."
+
+
+
+@admin_bp.route('/admin_atenciondetalleprod', methods=['GET','POST'])
+def admin_atenciondetalleprod():
+    tipo ='Venta'
+    mensaje=''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    form_servicio=AtencionServicioForm()
+    form_producto=AtencionProductoForm()
+    if request.method =='POST':
+        nombre = form_producto.nombre2_producto.data 
+        cantidad = form_producto.cantidad_producto.data 
+        preciou = form_producto.precio_producto.data
+        id_atencion = form_producto.idatencion_producto.data 
+        if nombre is None or cantidad is None or preciou is None:
+            mensaje='Error , Debe Completar Todos los Campos.'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        subt = cantidad * preciou 
+        try:
+            nuevo_dtlproducto = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
+            db.session.add(nuevo_dtlproducto)
+            db.session.commit()
+            mensaje = "Item Añadido"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        return "Reinicie Aplicacion o Consulte con Soporte."
+
+
+@admin_bp.route('/admin_atenciondetalleotro', methods=['GET','POST'])
+def admin_atenciondetalleotro():
+    tipo ='Otro'
+    mensaje=''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    form_servicio=AtencionServicioForm()
+    form_producto=AtencionProductoForm()
+    form_otro=AtencionOtroForm()
+    if request.method =='POST':
+        nombre = form_otro.otro.data 
+        cantidad = form_otro.cantidad.data 
+        preciou = form_otro.precio.data
+        id_atencion = form_otro.idatencion_otro.data 
+        if nombre is None or cantidad is None or preciou is None:
+            mensaje='Error , Debe Completar Todos los Campos.'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        subt = cantidad * preciou 
+        try:
+            nuevo_dtlotro = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
+            db.session.add(nuevo_dtlotro)
+            db.session.commit()
+            mensaje = "Item Añadido"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        return "Reinicie Aplicacion o Consulte con Soporte."
+
+
+@admin_bp.route('/eliminar_atenciondetalle/<id>', methods=['GET','POST'])
+def eliminar_atenciondetalle(id):
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    idatenciondetalle = id
+    #Validar si Atencion Pertenece a la Veterinaria.
+    validador =  AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).first()
+    print(validador)
+    if validador is None :
+        mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion')) 
+    try:
+        id_atencion = validador.idatencion
+        AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).delete()
+        db.session.commit()
+        mensaje = "Item eliminado"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+    except exc.SQLAlchemyError as e:
+        mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+        flash(mensaje)
+        return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+
+
+
+
+
+    #if form_servicio.validate():
+    #    return "submit"
+
+    #if form_servicio.validate():
+    #if request.method =='POST':
+    #    nombre2 = form_servicio.nombre2.data
+    #    print(nombre2)
+        #nombre2_producto = form_servicio.nombre2_producto.name
+        #print(nombre2)
+        #print(nombre2_producto)
+        #codigo_producto = request.form['building']
+        #print(codigo_producto)
+        return "testing"
+        '''
+    #if request.form["seleccionador"] == "servicios": 
+        if request.form["building"] == "serv":     
+            nombre = form_servicio.nombre2.data 
+            cantidad = form_servicio.cantidad.data 
+            precio = form_servicio.precio.data
+            print(nombre)
+            print(cantidad)
+            print(precio)
+            #return render_template("app/admin_atenciondetalleadd.html"  , form_servicio=form_servicio)
+            
+            return "test dentro"
+            '''
+    return "fuera test"
+
+
+        
+
     
+'''
+
+@admin_bp.route('/admin_atencion', methods=['GET','POST'])
+def admin_atencion():
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    form_dni = AtencionDNI()
+    form_atencion = AtencionForm()
+    estado_atencion="abierto"
+    if request.method == "POST":
+        token = form_atencion.csrf_token.data
+        id_cliente = form_atencion.id_cliente.data 
+        mascota = form_atencion.mascota.data 
+        sintomas = form_atencion.sintomas.data 
+        informe = form_atencion.informe.data 
+        receta = form_atencion.receta.data 
+        observaciones = form_atencion.observaciones.data
+        fecha_atencion = None 
+        total = 0
+        atendido_por = form_atencion.atendido_por.data
+        usuario = Uservet.query.filter_by(iduservet=iduservet).first()
+        creado_por = usuario.nombre
+        estado_atencion = "abierto"
+        try:
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion)
+            db.session.add(nueva_atencion)
+            db.session.commit()
+            mensaje = "Atencion Creada!"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion'))
+    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
+    return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion,atenciones=atenciones)
+    '''

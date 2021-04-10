@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm 
 from wtforms.fields.html5 import DateField
-from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField  , TextAreaField , HiddenField
+from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField  , TextAreaField , HiddenField , FloatField
 from wtforms.validators import InputRequired
-from models import Mascota , Empleado , Uservet
+from models import Mascota , Empleado , Uservet , Servicios , Productos
 
 class RegistroUsuario(FlaskForm):
     dni = IntegerField('dni')
@@ -86,10 +86,40 @@ class AtencionForm(FlaskForm):
     observaciones = TextAreaField('observaciones')
 
     def buscar_mascota(self,idcliente):
-        self.mascota.choices = [(mascota.nombre, mascota.nombre) for mascota in Mascota.query.filter_by(idcliente=idcliente).all()]
-    
+        self.mascota.choices = [(mascota.nombre, mascota.nombre) for mascota in Mascota.query.filter_by(idcliente=idcliente).all()]    
     def buscar_empleado(self,idvet):
         self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
+
+class AtencionServicioForm(FlaskForm):
+    precio = SelectField('precio',coerce=float)
+    idatencion = HiddenField('idatencion')
+    nombre = StringField('nombre')
+    nombre2 = HiddenField('nombre2') 
+    cantidad = IntegerField('cantidad')
+
+    def buscar_servicios(self,idvet):
+        self.precio.choices = [(servicio.precio,servicio.nombre) for servicio in Servicios.query.filter_by(idvet=idvet).all()]  
+
+class AtencionProductoForm(FlaskForm):
+    precio_producto = SelectField('precio_producto',coerce=float)
+    idatencion_producto = HiddenField('idatencion')
+    nombre_producto = StringField('nombre_producto')
+    nombre2_producto = HiddenField('nombre2_producto') 
+    cantidad_producto = IntegerField('cantidad_producto')
+
+    def buscar_productos(self,idvet):
+        self.precio_producto.choices = [(producto.precio,producto.nombre) for producto in Productos.query.filter_by(idvet=idvet).all()]   
+
+class AtencionOtroForm(FlaskForm):
+    idatencion_otro = HiddenField('idatencion')
+    otro = StringField('otro')     
+    precio = FloatField('precio')
+    cantidad = IntegerField('cantidad')
+
+
+    
+
+
 
         
 
