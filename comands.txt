@@ -21,3 +21,6 @@ atenciones = Atencion.query.with_entities(Atencion.fecha_atencion,Atencion.total
 
 resultado : (47228271, 47228271)
 Nota : El Query sin .all() o .first() o .one() NO FUNCIONA.
+
+LLAVES MULTIPLES : 
+__table_args__ = (db.UniqueConstraint('nombre','idvet'),)

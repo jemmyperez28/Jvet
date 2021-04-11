@@ -1,7 +1,7 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm
-from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios
+from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex
 from funciones import encriptar
 from config.db import db 
 import os
@@ -412,7 +412,6 @@ def editar_atencion(id):
     id_atencion = id 
     if request.method == "GET":  
         datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
-
         servicios = Servicios.query.filter_by(idvet=idvet).all()
         form_servicio.buscar_servicios(idvet)
         form_producto.buscar_productos(idvet)
@@ -461,6 +460,8 @@ def admin_atenciondetalleadd():
 
 @admin_bp.route('/admin_atenciondetalleprod', methods=['GET','POST'])
 def admin_atenciondetalleprod():
+    nombre_usuario = session['nombre'] 
+    fecha = None
     tipo ='Venta'
     mensaje=''
     iduservet =  session['iduservet'] 
@@ -476,18 +477,40 @@ def admin_atenciondetalleprod():
             mensaje='Error , Debe Completar Todos los Campos.'
             flash(mensaje)
             return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
-        subt = cantidad * preciou 
-        try:
-            nuevo_dtlproducto = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
-            db.session.add(nuevo_dtlproducto)
-            db.session.commit()
-            mensaje = "Item Añadido"
+        #Validar Si Hay Stock
+        #1. A partir del Nombre y idveterinaria , id producto.  
+        producto = Productos.query.filter_by(nombre=nombre).filter_by(idvet=idvet).first()
+        stock = producto.stock 
+        #2. Validar si Hay Stock del producto solicitado
+        if stock <= 0:
+            mensaje='Stock Del Producto : 0 , ' + producto.nombre + ' Porfavor Valide Producto/Almacen'
             flash(mensaje)
             return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
-        except exc.SQLAlchemyError as e:
-            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+        if stock < cantidad:
+            mensaje='No Hay Stock para la Cantidad Seleccionada , Porfavor Valide Producto/Almacen'
             flash(mensaje)
             return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+        elif stock >= cantidad: 
+            subt = cantidad * preciou 
+            try:
+                #Agrega Nuevo DetalleProducto
+                nuevo_dtlproducto = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
+                db.session.add(nuevo_dtlproducto)
+                db.session.flush()
+                idatedet = nuevo_dtlproducto.idatenciondetalle
+                # Agrega Linea al Kardex
+                nuevo_kardex = Kardex(fecha,tipo,nombre_usuario,producto.nombre,0,cantidad,idvet,idatedet,None)
+                db.session.add(nuevo_kardex)
+                # Actualiza Tabla Producto
+                producto.stock = (stock - cantidad)
+                db.session.commit()
+                mensaje = "Item Añadido"
+                flash(mensaje)
+                return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
+            except exc.SQLAlchemyError as e:
+                mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+                flash(mensaje)
+                return redirect(url_for('admin_bp.editar_atencion', id=id_atencion))
         return "Reinicie Aplicacion o Consulte con Soporte."
 
 
@@ -531,12 +554,21 @@ def eliminar_atenciondetalle(id):
     idatenciondetalle = id
     #Validar si Atencion Pertenece a la Veterinaria.
     validador =  AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).first()
-    print(validador)
     if validador is None :
         mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
         flash(mensaje)
-        return redirect(url_for('admin_bp.admin_atencion')) 
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion)) 
     try:
+        #Si es Producto
+        if validador.tipo == 'Venta': 
+            #1. Obtiene el Producto a partir del nombre y idvet de AtencionDetalle
+            producto = Productos.query.filter_by(nombre=validador.nombre).filter_by(idvet=idvet).first()
+            #2. Actualizo Stock del Producto 
+            producto.stock = producto.stock + validador.cantidad 
+            #3. Eliminar de Kardex 
+            Kardex.query.filter_by(idatedet=idatenciondetalle).delete()
+        #Si NO es Producto    
+        #4 Eliminar de AtencionDetalle
         id_atencion = validador.idatencion
         AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).delete()
         db.session.commit()

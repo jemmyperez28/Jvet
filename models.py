@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime , func , MetaData , Float
+from sqlalchemy import Column, Integer, DateTime , func , MetaData , Float , UniqueConstraint
 from datetime import datetime
 from config.db import db
 
@@ -19,6 +19,7 @@ class Vet(db.Model):
     relacionatencion = db.relationship('Atencion',backref='vet',lazy=True)
     relacionempleado = db.relationship('Empleado',backref='vet',lazy=True)
     relacionproductos = db.relationship('Productos',backref='vet',lazy=True)
+    relacionkardex = db.relationship('Kardex',backref='vet',lazy=True)
 
     def __init__(self,nombre,logo,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado):
         self.nombre = nombre
@@ -114,6 +115,8 @@ class Productos(db.Model):
     precio = db.Column(db.Float)
     stock = db.Column(db.Integer)
     idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    __table_args__ = (db.UniqueConstraint('nombre','idvet'),)
+
     def __init__(self,nombre,descripcion,precio,stock,idvet):
         self.nombre = nombre 
         self.descripcion = descripcion
@@ -226,6 +229,31 @@ class Empleado(db.Model):
         self.productos = productos
         self.activo = activo
         self.idvet = idvet
+
+class Kardex(db.Model):
+    idkardex = db.Column(db.Integer,primary_key=True)
+    fecha_kardex = db.Column(db.DateTime,default=datetime.utcnow)
+    tipo = db.Column(db.String(30))
+    usuario = db.Column(db.String(50))
+    producto = db.Column(db.String(50))
+    cantidad_ingreso = db.Column(db.Integer)
+    cantidad_salida = db.Column(db.Integer)
+    idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    idatedet = db.Column(db.Integer , unique=True)
+    idordendet = db.Column(db.Integer , unique = True)
+    def __init__(self,fecha_kardex,tipo,usuario,producto,cantidad_ingreso,cantidad_salida,idvet,idatedet,idordendet):
+        self.fecha_kardex=fecha_kardex
+        self.tipo=tipo
+        self.usuario=usuario
+        self.producto=producto
+        self.cantidad_ingreso=cantidad_ingreso
+        self.cantidad_salida=cantidad_salida
+        self.idvet=idvet 
+        self.idatedet=idatedet
+        self.idordendet=idordendet
+
+
+
 
 
 
