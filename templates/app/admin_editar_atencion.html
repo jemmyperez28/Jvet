@@ -21,7 +21,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0"> Añadir Items a la Atencion </h1> 
+            <h1 class="m-0"> Añadir Items a la Atencion COD{{id_atencion}}  -  <a href="/admin_atencion">Volver</a></h1> 
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -75,8 +75,11 @@
                                    <td> {{ dato.precio_unitario }} </td>
                                    <td> {{ dato.subtotal }} </td>
                                    <td><a href="/eliminar_atenciondetalle/{{dato.idatenciondetalle}}">Eliminar</a>  </td>
-                               </tr>
+                               </tr>                          
                                {% endfor %} 
+                               <tr>
+                                <th colspan="3">Total : {{ total }} </th>
+                              </tr>
                                {% endif %}
                               </tbody>
                           </table>

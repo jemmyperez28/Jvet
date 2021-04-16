@@ -116,6 +116,13 @@ class AtencionOtroForm(FlaskForm):
     precio = FloatField('precio')
     cantidad = IntegerField('cantidad')
 
+class AtencionPadre(FlaskForm):
+    idatencion = HiddenField('idatencion')
+    sintomas = TextAreaField('sintomas')
+    informe = TextAreaField('informe')
+    receta =  TextAreaField('receta')
+    observaciones = TextAreaField('observaciones')
+
 
     
 

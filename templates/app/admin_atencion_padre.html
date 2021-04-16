@@ -1,0 +1,162 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"> Modulo Atencion </h1> 
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+  <!-- Main content -->
+  <section class="content"> 
+  {% with messages = get_flashed_messages() %}
+  {% if messages  %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}     
+
+      <div class="container-fluid">      
+          <!-- Comprobador DNI-->
+          <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title"> Detalle Atencion </h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+
+                <form class="form-horizontal"  action="#" method="post" >
+                  {{ form_padre.csrf_token }}
+                  <div class="card-body">
+                    <div class="form-group row">
+                      {% if datos is defined %} 
+                      {{form_padre.idatencion(value=datos.idatencion)}}
+                      {% endif %}
+                    <div class = "col-sm-2">
+                      <label for="dni">DNI : </label>
+                    </div>
+                    <div class="col-sm-3">
+                        {% if datos is defined %}
+                        <label for="dni" >{{datos.dni}}</label>
+                        {% else %}
+                        <label for="dni" > - </label>
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-2">
+                      <label for="nombre">Nombre Cliente : </label>
+                    </div>
+                      <div class="col-sm-3">                 
+                          {% if datos is defined %}
+                          <label for="nombre">{{datos.nombre}}</label>
+                          {% else %}
+                          <label for="nombre"> - </label>
+                          {% endif %}
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class = "col-sm-2">
+                        <label for="apellido" >Apellido : </label>
+                      </div>        
+                      <div class="col-sm-3">
+                        {% if datos is defined %}
+                        <label for="apellidos"  >{{datos.apellidos}}</label>
+                        {% else %}
+                        <label for="apellidos"  > - </label>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="atendido_por" >Atendido Por</label>
+                      </div>
+                      <div class="col-sm-3">
+                        <label for="atendido_por"  >{{datos.atendido_por}}</label>
+                      </div>
+                      <div class="col-sm-2">
+                        <label for="mascota" >Mascota : </label> 
+                      </div>    
+                      <div class="col-sm-3">
+                        <label for="atendido_por"  >{{datos.nombremascota}}</label>
+                      </div>        
+                    </div> 
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="sintomas"  >Sintomas</label>
+                      </div>         
+                      <div class="col-sm-3">
+                        <textarea class="form-control" id="sintomas" name="sintomas" value="" style="margin-top: 0px; margin-bottom: 0px; height: 57px;"> {{datos.sintomas}} </textarea>                   
+                      </div>
+                      <div class="col-sm-2">
+                     <label for="informe"  >Informe</label>
+                      </div> 
+                      <div class="col-sm-3">
+                        <textarea class="form-control" id="informe" name="informe" value=""> {{datos.informe}} </textarea>                              
+                      </div>  
+                    </div>      
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="receta">Receta</label>
+                      </div>         
+                      <div class="col-sm-3">
+                        <textarea class="form-control" id="receta" name="receta" value=""> {{datos.receta}} </textarea>                    
+                      </div>
+                      <div class="col-sm-2">
+                     <label for="observaciones"  >Observaciones</label>
+                      </div> 
+                      <div class="col-sm-3">
+                        <textarea class="form-control" id="observaciones" name="observaciones" value=""> {{datos.observaciones}} </textarea>                                                 
+                      </div>  
+                    </div>             
+                   <!-- /.card-body -->
+                   <div class="card-footer">
+                     {% if form_padre.errors %}
+                      {{ form_padre.errors }}
+                      {% endif %}
+                     {% if datos is defined %}
+                   <center> <button type="submit" class="btn btn-primary">Actualizar Atencion </button></center>
+                    {% endif %}
+                  </div>
+                </form>
+              </div>
+                <!-- /.card -->            
+          </div> 
+         </div>
+         </div>
+
+    </section>  
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

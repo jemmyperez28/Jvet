@@ -35,12 +35,23 @@
 
     <!-- Main content -->
     <section class="content">
-     
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
         <div class="row">
             <div class="col-12">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">Test</h3>
+                  <h3 class="card-title">Resultados de Busqueda</h3>
   
                   <div class="card-tools">
                     <div class="input-group input-group-sm" style="width: 150px;">
@@ -59,17 +70,21 @@
                   <table class="table table-hover text-nowrap">
                     <thead>
                       <tr>
-                        <th>Nombre</th>
-                        <th>DNI</th>
-                        <th>Correo</th>              
+                        <th>Codigo Atencion</th>
+                        <th>Fecha Atencion</th>
+                        <th>Mascota</th>              
+                        <th>Cliente</th>
                       </tr>
                     </thead>
                     <tbody>
                      {% for dato in datos %}
                      <tr>
+                         <td> COD{{ dato.idatencion }} </td>
+                         <td> {{ dato.fecha_atencion }} </td>
+                         <td> {{ dato.nombremascota }} </td>
                          <td> {{ dato.nombre }} </td>
-                         <td> {{ dato.dni }} </td>
-                         <td> {{ dato.email }} </td>
+                         <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a>  </td>
+
                      </tr>
                      {% endfor %}
                     </tbody>

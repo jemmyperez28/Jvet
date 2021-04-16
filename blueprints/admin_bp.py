@@ -1,6 +1,6 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre
 from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex
 from funciones import encriptar
 from config.db import db 
@@ -10,8 +10,10 @@ from werkzeug.utils import secure_filename
 #from config.keys import UPLOAD_FOLDER
 import imghdr
 from config.keys import extensiones
-from sqlalchemy import exc , desc
-import datetime
+from sqlalchemy import exc , desc , func
+from datetime import datetime
+
+
 
 admin_bp = Blueprint('admin_bp',__name__)
 
@@ -73,9 +75,17 @@ def admin_historial_atencion():
     if request.method == 'GET':
         #Valida nivel de usuario
         iduservet = session['iduservet']
-        datos = Uservet.query.all()
+        idvet = session['vet_id']
+        hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()     
+        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter_by(fecha_atencion=date.today()).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()     
+        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter_by(fecha_atencion=date.today()).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre)
+        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter(fecha_atencion >= hoy).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()
+        #datos = Atencion.query.filter(fecha_atencion >= hoy).all()
+        datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+        ' and date(Atencion.fecha_atencion) = CURDATE()' )
         return render_template("/app/admin_historial_atencion.html",datos=datos)   
-
+        #return "test "
 @admin_bp.route('/admin_veterinaria', methods=['GET','POST'])
 def admin_veterinaria():
     form_veterinaria = Veterinaria()
@@ -133,12 +143,13 @@ def admin_veterinaria():
                 id_veterinaria = nuevo_vet.idvet
                 usuario.vet_id = id_veterinaria
                 db.session.commit()
-                mensaje='Veterinaria agregada Correctamente'
+                mensaje='Veterinaria agregada Correctamente , Porfavor Inicie Sesion Nuevamente'
                 if nombre_unico is not None:
                     logo.save(os.path.join(current_app.config['UPLOAD_FOLDER'], nombre_unico))
                     mensaje = mensaje + ' , Se Cargo la Imagen'
                 flash(mensaje)
-                return redirect(url_for('admin_bp.admin_veterinaria'))
+                return redirect(url_for('login.logout'))
+                #return redirect(url_for('admin_bp.admin_veterinaria'))
             except exc.SQLAlchemyError as e:
                 mensaje='Ocurrio Un Problema Consulte con Soporte'
                 flash(mensaje)
@@ -300,6 +311,8 @@ def admin_atencion():
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_atencion'))
     atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
+
+
     return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion,atenciones=atenciones)
 
 
@@ -352,6 +365,7 @@ def admin_dni(result=None):
 def eliminar_mascota(id):
     idmascota = id
     try:
+        #Falta Validar que Solo La Vet Pueda eliminar mascotas que EL creo.
         datos =  Mascota.query.filter_by(idmascota=idmascota).first()
         dueno = Cliente.query.filter_by(idcliente=datos.idcliente).first()
         Mascota.query.filter_by(idmascota=idmascota).delete()
@@ -400,7 +414,24 @@ def editar_mascota(id):
             return redirect(url_for('admin_bp.admin_cm')) 
         return redirect(url_for('admin_bp.admin_dni', dni=data.dni, form_mascota=form_mascota))
     return "Porfavor Reinicie la aplicacion"
+
         
+@admin_bp.route('/editar_atencion_padre/<int:id>', methods=['GET','POST'])
+def editar_atencion_padre(id):
+    #Validar Si Atencion Pertenece a Veterinaria. 
+    mensaje=''
+    idvet = session['vet_id']
+    idatencion = id 
+    form_padre = AtencionPadre()
+    if request.method == "GET":
+        datos = Atencion.query.with_entities(Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones).filter_by(idatencion=idatencion).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre,Cliente.apellidos,Cliente.dni).first()
+        if datos is None:
+            mensaje='Error , No Tiene los Privilegios Para ver Esta Atencion'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_historial_atencion'))
+        #Enviar los Datos de la Atencion Para Editar o Mostrar el Detalle    
+        #return redirect(render_template("app/admin_atencion_padre.html",datos=datos , form_padre=form_padre))
+        return render_template("app/admin_atencion_padre.html",form_padre=form_padre,datos=datos)
 
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
 @admin_bp.route('/editar_atencion/<int:id>', methods=['GET','POST'])
@@ -410,19 +441,49 @@ def editar_atencion(id):
     form_otro=AtencionOtroForm()
     idvet = session['vet_id']
     id_atencion = id 
+    #Validar si Atencion Pertenece a Veterinaria.
+    validar = Atencion.query.filter_by(idvet=idvet).filter_by(idatencion=id_atencion).first()
+    if validar is None: 
+        mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion)) 
+    #Validar si Atencion se encuentra en estado ABIERTO
+    if validar.estado_atencion != 'abierto':
+        mensaje = "Error la Atencion Codigo : COD" + str(validar.idatencion) + ' Se Encuentra CERRADA. Consulte con Soporte'
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion)) 
     if request.method == "GET":  
+        datos_atencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+        total = datos_atencion.total
         datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
         servicios = Servicios.query.filter_by(idvet=idvet).all()
         form_servicio.buscar_servicios(idvet)
         form_producto.buscar_productos(idvet)
-        return render_template("app/admin_editar_atencion.html" , datos=datos , id_atencion=id_atencion,servicios=servicios , form_servicio=form_servicio , form_producto=form_producto, form_otro=form_otro)
-    return "test"
+        return render_template("app/admin_editar_atencion.html" , datos=datos , id_atencion=id_atencion,servicios=servicios , form_servicio=form_servicio , form_producto=form_producto, form_otro=form_otro , total=total)
+    return "404 Reinicie Aplicacion."
 
 @admin_bp.route('/terminar_atencion/<int:id>', methods=['GET','POST'])
 def terminar_atencion(id):
+    estado = 'cerrado'
     id_atencion = id 
-    print(id_atencion)
-    return "test"
+    idvet = session['vet_id']
+    #Validar si Atencion Pertenece a Veterinaria.
+    validar = Atencion.query.filter_by(idatencion=id_atencion).filter_by(idvet=idvet).first()
+    if validar is None:
+        mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion))
+    try:
+        validar.estado_atencion=estado
+        db.session.commit()
+        mensaje = "Atencion Codigo : COD" + str(validar.idatencion) + " Cerrada"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion))
+    except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion', id=id_atencion))
+
 
 
 @admin_bp.route('/admin_atenciondetalleadd', methods=['GET','POST'])
@@ -446,6 +507,11 @@ def admin_atenciondetalleadd():
         try:
             nuevo_dtlatencion = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
             db.session.add(nuevo_dtlatencion)
+            #Añade Detalle y Actualiza El Total
+            #Total = Total + SubT
+            db.session.flush()
+            tatencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+            tatencion.total = tatencion.total + subt
             db.session.commit()
             mensaje = "Item Añadido"
             flash(mensaje)
@@ -503,6 +569,10 @@ def admin_atenciondetalleprod():
                 db.session.add(nuevo_kardex)
                 # Actualiza Tabla Producto
                 producto.stock = (stock - cantidad)
+                #Actualiza El Total
+                #Total = Total + SubT
+                tatencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+                tatencion.total = tatencion.total + subt
                 db.session.commit()
                 mensaje = "Item Añadido"
                 flash(mensaje)
@@ -536,6 +606,11 @@ def admin_atenciondetalleotro():
         try:
             nuevo_dtlotro = AtencionDetalle(tipo,nombre,cantidad,preciou,subt,id_atencion)
             db.session.add(nuevo_dtlotro)
+            db.session.flush()
+            #Añade Detalle y Actualiza El Total
+            #Total = Total + SubT
+            tatencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+            tatencion.total = tatencion.total + subt
             db.session.commit()
             mensaje = "Item Añadido"
             flash(mensaje)
@@ -552,12 +627,14 @@ def eliminar_atenciondetalle(id):
     iduservet =  session['iduservet'] 
     idvet = session['vet_id']
     idatenciondetalle = id
-    #Validar si Atencion Pertenece a la Veterinaria.
+    #Validar si Atencion Pertenece a la Veterinaria. FALTA HACER JOIN
     validador =  AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).first()
-    if validador is None :
+    permiso = Atencion.query.filter_by(idvet=idvet).join(AtencionDetalle, AtencionDetalle.idatencion == Atencion.idatencion).filter_by(idatenciondetalle=idatenciondetalle).first()
+
+    if permiso is None :
         mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
         flash(mensaje)
-        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion)) 
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion))
     try:
         #Si es Producto
         if validador.tipo == 'Venta': 
@@ -570,6 +647,8 @@ def eliminar_atenciondetalle(id):
         #Si NO es Producto    
         #4 Eliminar de AtencionDetalle
         id_atencion = validador.idatencion
+        #Actualizar Total = Total - validador.subtotal 
+        permiso.total = permiso.total - validador.subtotal
         AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).delete()
         db.session.commit()
         mensaje = "Item eliminado"
