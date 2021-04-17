@@ -1,6 +1,6 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre , BuscarAtencion
 from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex
 from funciones import encriptar
 from config.db import db 
@@ -12,6 +12,7 @@ import imghdr
 from config.keys import extensiones
 from sqlalchemy import exc , desc , func
 from datetime import datetime
+import datetime as dt 
 
 
 
@@ -76,16 +77,14 @@ def admin_historial_atencion():
         #Valida nivel de usuario
         iduservet = session['iduservet']
         idvet = session['vet_id']
+        form_buscar = BuscarAtencion()
         hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()     
-        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter_by(fecha_atencion=date.today()).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()     
-        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter_by(fecha_atencion=date.today()).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre)
-        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.nombremascota).filter_by(idvet=idvet).filter(fecha_atencion >= hoy).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_column(Cliente.nombre).all()
-        #datos = Atencion.query.filter(fecha_atencion >= hoy).all()
         datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
         ' and date(Atencion.fecha_atencion) = CURDATE()' )
-        return render_template("/app/admin_historial_atencion.html",datos=datos)   
+        return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)   
         #return "test "
+
+
 @admin_bp.route('/admin_veterinaria', methods=['GET','POST'])
 def admin_veterinaria():
     form_veterinaria = Veterinaria()
@@ -96,7 +95,7 @@ def admin_veterinaria():
     usuario = Uservet.query.filter_by(iduservet=iduservet).first()  
     us_vet = usuario.vet_id  
     vets = Vet.query.filter_by(idvet=us_vet).first()
-    hora = datetime.datetime.now().strftime("%Y%m%d%H%M%S") 
+    hora = dt.datetime.now().strftime("%Y%m%d%H%M%S") 
     if vets:
         diccionario = {'logo' : vets.logo, 'imagen' : vets.imagen , 'vetid' : us_vet ,'nombre' : vets.nombre , 'telefono' : vets.telefono , 'whatsapp' : vets.whatsapp ,
         'ciudad':  vets.ciudad , 'distrito': vets.distrito , 'direccion': vets.direccion}
@@ -396,7 +395,7 @@ def editar_mascota(id):
         observaciones = form_mascota.observaciones.data 
         #Obtener DNI a partir de IDMASCOTA.
         data = Cliente.query.with_entities(Cliente.dni).join(Mascota, Cliente.idcliente == Mascota.idcliente).filter_by(idmascota=idmascota).one()
-        try : 
+        try :
             mimascota = Mascota.query.filter_by(idmascota=idmascota).first()
             mimascota.nombre = nombre 
             mimascota.raza = raza 
@@ -415,7 +414,7 @@ def editar_mascota(id):
         return redirect(url_for('admin_bp.admin_dni', dni=data.dni, form_mascota=form_mascota))
     return "Porfavor Reinicie la aplicacion"
 
-        
+@admin_bp.route('/editar_atencion_padre/', methods=['GET','POST'] , defaults={'id':None})        
 @admin_bp.route('/editar_atencion_padre/<int:id>', methods=['GET','POST'])
 def editar_atencion_padre(id):
     #Validar Si Atencion Pertenece a Veterinaria. 
@@ -424,7 +423,7 @@ def editar_atencion_padre(id):
     idatencion = id 
     form_padre = AtencionPadre()
     if request.method == "GET":
-        datos = Atencion.query.with_entities(Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones).filter_by(idatencion=idatencion).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre,Cliente.apellidos,Cliente.dni).first()
+        datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones).filter_by(idatencion=idatencion).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre,Cliente.apellidos,Cliente.dni).first()
         if datos is None:
             mensaje='Error , No Tiene los Privilegios Para ver Esta Atencion'
             flash(mensaje)
@@ -432,6 +431,30 @@ def editar_atencion_padre(id):
         #Enviar los Datos de la Atencion Para Editar o Mostrar el Detalle    
         #return redirect(render_template("app/admin_atencion_padre.html",datos=datos , form_padre=form_padre))
         return render_template("app/admin_atencion_padre.html",form_padre=form_padre,datos=datos)
+    if form_padre.validate_on_submit() and id is None:
+        id_atencion = form_padre.idatencion.data
+        sintomas = form_padre.sintomas.data
+        receta = form_padre.receta.data
+        observaciones = form_padre.observaciones.data
+        informe = form_padre.informe.data 
+        try :
+            miatencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+            miatencion.sintomas = sintomas 
+            miatencion.receta = receta 
+            miatencion.observaciones = observaciones
+            miatencion.informe = informe 
+            db.session.commit()
+            mensaje = "Se Actualizaron los Datos de Atencion"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_historial_atencion'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_historial_atencion'))
+    return "Reinicie Aplicacion o Consulte A Soporte Tecnico"
+
+
+
 
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
 @admin_bp.route('/editar_atencion/<int:id>', methods=['GET','POST'])

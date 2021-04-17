@@ -47,12 +47,41 @@
 		{% endfor %}
 		{% endif %}
 		{% endwith %}     
+    <form class="form-horizontal"  action="" method="post" >
+      <div class="card-body">
+        <div class="form-group row"> 
+          Busqueda
+        </div>
+        <div class="form-group row">
+          <div class = "col-sm-1">
+            <label for="dni">DNI : </label>
+          </div> 
+          <div class = "col-sm-2">
+            {{ form_buscar.dni(class_="form-control")}}
+          </div> 
+          </div>
+          <div class="form-group row">
+            <div class = "col-sm-1">
+              <label for="fecha">Fecha :</label>
+              
+            </div>
+            <div class ="col-sm-2">
+              {{ form_buscar.fecha(class_="form-control") }}
+            </div>
+          </div>
+            <div class="form-group-row">
+            <div class = "col-sm-3">
+              <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+          </div>
+         
+        </div>
+    </form>
         <div class="row">
             <div class="col-12">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">Resultados de Busqueda</h3>
-  
+                  <h3 class="card-title">Resultados de Busqueda</h3>      
                   <div class="card-tools">
                     <div class="input-group input-group-sm" style="width: 150px;">
                       <input type="text" name="table_search" class="form-control float-right" placeholder="Search">

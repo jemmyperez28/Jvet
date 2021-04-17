@@ -122,6 +122,9 @@ class AtencionPadre(FlaskForm):
     informe = TextAreaField('informe')
     receta =  TextAreaField('receta')
     observaciones = TextAreaField('observaciones')
+class BuscarAtencion(FlaskForm):
+    dni = IntegerField('dni')
+    fecha = DateField('fecha')
 
 
     

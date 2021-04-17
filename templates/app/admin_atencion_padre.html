@@ -20,7 +20,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0"> Modulo Atencion </h1> 
+          <h1 class="m-0"> Historial de Atencion : COD{{datos.idatencion}}<br> <a href="/admin_historial_atencion"> Volver</a> </h1>          
         </div><!-- /.col -->
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -58,7 +58,7 @@
                 <!-- /.card-header -->
                 <!-- form start -->
 
-                <form class="form-horizontal"  action="#" method="post" >
+                <form class="form-horizontal"   action="/editar_atencion_padre" method="post" >
                   {{ form_padre.csrf_token }}
                   <div class="card-body">
                     <div class="form-group row">
@@ -117,13 +117,13 @@
                         <label for="sintomas"  >Sintomas</label>
                       </div>         
                       <div class="col-sm-3">
-                        <textarea class="form-control" id="sintomas" name="sintomas" value="" style="margin-top: 0px; margin-bottom: 0px; height: 57px;"> {{datos.sintomas}} </textarea>                   
+                        <textarea class="form-control" id="sintomas" name="sintomas"  value="" rows="4"> {{datos.sintomas}} </textarea>                   
                       </div>
                       <div class="col-sm-2">
                      <label for="informe"  >Informe</label>
                       </div> 
                       <div class="col-sm-3">
-                        <textarea class="form-control" id="informe" name="informe" value=""> {{datos.informe}} </textarea>                              
+                        <textarea class="form-control" id="informe" name="informe" value=""  rows="4"> {{datos.informe}} </textarea>                              
                       </div>  
                     </div>      
                     <div class="form-group row">
@@ -131,13 +131,13 @@
                         <label for="receta">Receta</label>
                       </div>         
                       <div class="col-sm-3">
-                        <textarea class="form-control" id="receta" name="receta" value=""> {{datos.receta}} </textarea>                    
+                        <textarea class="form-control" id="receta" name="receta" value=""  rows="4"> {{datos.receta}} </textarea>                    
                       </div>
                       <div class="col-sm-2">
                      <label for="observaciones"  >Observaciones</label>
                       </div> 
                       <div class="col-sm-3">
-                        <textarea class="form-control" id="observaciones" name="observaciones" value=""> {{datos.observaciones}} </textarea>                                                 
+                        <textarea class="form-control" id="observaciones" name="observaciones" value=""  rows="4"> {{datos.observaciones}} </textarea>                                                 
                       </div>  
                     </div>             
                    <!-- /.card-body -->
