@@ -73,16 +73,30 @@ def admin_info():
 
 @admin_bp.route('/admin_historial_atencion', methods=['GET','POST'])
 def admin_historial_atencion():
+    form_buscar = BuscarAtencion()
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
     if request.method == 'GET':
         #Valida nivel de usuario
-        iduservet = session['iduservet']
-        idvet = session['vet_id']
-        form_buscar = BuscarAtencion()
+        
         hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
         datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
         ' and date(Atencion.fecha_atencion) = CURDATE()' )
         return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)   
-        #return "test "
+    if request.method == "POST":
+        dni = form_buscar.dni.data 
+        fecha = form_buscar.fecha.data 
+        print(dni)
+        #Si Solo Busca por DNI.
+        if dni is not None and fecha is None:
+            cliente = Cliente.query.filter_by(dni=dni).first()
+            #print(cliente.idcliente)
+            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            ' and atencion.idcliente='+str(cliente.idcliente))
+            return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
+
+        return "test"
+    
 
 
 @admin_bp.route('/admin_veterinaria', methods=['GET','POST'])
