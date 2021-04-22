@@ -71,14 +71,18 @@ def admin_info():
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_info'))
 
+@admin_bp.route('/admin_reporte_atencion', methods=['GET','POST'])
+def admin_reporte_atencion():
+    return render_template("/app/admin_reporte_atencion.html")
+
 @admin_bp.route('/admin_historial_atencion', methods=['GET','POST'])
 def admin_historial_atencion():
+    mensaje=''
     form_buscar = BuscarAtencion()
     iduservet = session['iduservet']
     idvet = session['vet_id']
     if request.method == 'GET':
         #Valida nivel de usuario
-        
         hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
         datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
         ' and date(Atencion.fecha_atencion) = CURDATE()' )
@@ -86,16 +90,28 @@ def admin_historial_atencion():
     if request.method == "POST":
         dni = form_buscar.dni.data 
         fecha = form_buscar.fecha.data 
-        print(dni)
         #Si Solo Busca por DNI.
         if dni is not None and fecha is None:
             cliente = Cliente.query.filter_by(dni=dni).first()
+            if not cliente:
+                mensaje='No se Encontro Informacion para Cliente DNI : ' + str(dni)
+                datos={}
+                flash(mensaje)
+                return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
             #print(cliente.idcliente)
             datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
-            ' and atencion.idcliente='+str(cliente.idcliente))
+            ' and atencion.idcliente='+str(cliente.idcliente))    
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
-
-        return "test"
+        elif dni is None and fecha is not None:
+            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
+            return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
+        elif dni is not None and fecha is not None:
+            mensaje='La Busqueda Debe ser Por Fecha ó por DNI : ' + str(dni)
+            datos={}
+            flash(mensaje)
+            return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
+        return "Reinicie Aplicacion 105"
     
 
 

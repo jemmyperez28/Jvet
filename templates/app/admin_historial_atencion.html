@@ -99,19 +99,19 @@
                   <table class="table table-hover text-nowrap">
                     <thead>
                       <tr>
-                        <th>Codigo Atencion</th>
-                        <th>Fecha Atencion</th>
-                        <th>Mascota</th>              
-                        <th>Cliente</th>
+                        <th>Fecha At</th>
+                        <th>Codigo At</th>
+                        <th>Cliente</th>              
+                        <th>Mascota</th>
                       </tr>
                     </thead>
                     <tbody>
                      {% for dato in datos %}
                      <tr>
-                         <td> COD{{ dato.idatencion }} </td>
                          <td> {{ dato.fecha_atencion }} </td>
-                         <td> {{ dato.nombremascota }} </td>
+                         <td> COD{{ dato.idatencion }} </td>
                          <td> {{ dato.nombre }} </td>
+                         <td> {{ dato.nombremascota }} </td>                         
                          <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a>  </td>
 
                      </tr>
