@@ -73,7 +73,40 @@ def admin_info():
 
 @admin_bp.route('/admin_reporte_atencion', methods=['GET','POST'])
 def admin_reporte_atencion():
-    return render_template("/app/admin_reporte_atencion.html")
+    form_buscar = BuscarAtencion()
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
+    if request.method == 'GET':
+        #Valida nivel de usuario.
+        hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
+        datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+        ' and date(Atencion.fecha_atencion) = CURDATE()')
+        return render_template("/app/admin_reporte_atencion.html",datos=datos, form_buscar=form_buscar)
+    if request.method == "POST":
+        dni = form_buscar.dni.data 
+        fecha = form_buscar.fecha.data 
+        #Si Solo Busca por DNI.
+        if dni is not None and fecha is None:
+            cliente = Cliente.query.filter_by(dni=dni).first()
+            if not cliente:
+                mensaje='No se Encontro Informacion para Cliente DNI : ' + str(dni)
+                datos={}
+                flash(mensaje)
+                return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
+            #print(cliente.idcliente)
+            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            ' and atencion.idcliente='+str(cliente.idcliente))    
+            return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
+        elif dni is None and fecha is not None:
+            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
+            return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
+        elif dni is not None and fecha is not None:
+            mensaje='La Busqueda Debe ser Por Fecha ó por DNI : ' + str(dni)
+            datos={}
+            flash(mensaje)
+            return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
+        return "Reinicie Aplicacion COD109"
 
 @admin_bp.route('/admin_historial_atencion', methods=['GET','POST'])
 def admin_historial_atencion():
@@ -111,7 +144,7 @@ def admin_historial_atencion():
             datos={}
             flash(mensaje)
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
-        return "Reinicie Aplicacion 105"
+        return "Reinicie Aplicacion COD147"
     
 
 
@@ -484,6 +517,23 @@ def editar_atencion_padre(id):
     return "Reinicie Aplicacion o Consulte A Soporte Tecnico"
 
 
+
+@admin_bp.route('/reporte_atencion/', methods=['GET','POST'] , defaults={'id':None})
+@admin_bp.route('/reporte_atencion/<int:id>', methods=['GET','POST'])
+def reporte_atencion(id):
+    idvet = session['vet_id']
+    id_atencion = id 
+    validar = Atencion.query.filter_by(idvet=idvet).filter_by(idatencion=id_atencion).first()
+    if validar is None: 
+        mensaje = "Error Ud. No tiene Los Privilegios Para Realizar Esta Operacion"
+        flash(mensaje)
+        return redirect(url_for('admin_bp.admin_atencion', id=id_atencion)) 
+    if request.method == "GET":  
+        datos_atencion = Atencion.query.filter_by(idatencion=id_atencion).first()
+        total = datos_atencion.total
+        datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
+        return render_template("app/admin_reporte_atencion2.html" , datos=datos , total=total) 
+    return "test"
 
 
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
