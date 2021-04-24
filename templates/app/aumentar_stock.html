@@ -1,0 +1,97 @@
+{% extends 'app/admin_template.html' %}
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Aumentar Stock</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+              <div class="col-md-6">
+                <!-- general form elements -->
+                <div class="card card-primary">
+                  <div class="card-header">
+                    <h3 class="card-title">Cantidad</h3>
+                  </div>
+                  <!-- /.card-header -->
+                  <!-- form start -->
+                  <form action="{{ url_for('productos_bp.admin_aumentar_stock') }}" method="post" enctype="multipart/form-data">
+                    {{ form_stock.csrf_token  }}
+                    {{ form_stock.idproducto(value=datos.idProducto)  }}
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="nombre">Producto : {{ datos.nombre }}</label>
+                        </div>
+                        <div class="form-group">
+                            <label for="nombre">Stock Actual : {{ datos.stock }}</label>
+                          </div>
+                      <div class="form-group col-md-4" >
+                        <label for="nombre">Cantidad a Aumentar:</label>
+                        {{ form_stock.aumento(class_="form-control" ) }}
+                      </div>
+                    </div>
+                    <!-- /.card-body -->
+                    <div class="card-footer">
+                      <button type="submit" class="btn btn-primary">Aumentar</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- /.card -->
+              </div> 
+
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  {% endblock %}
+
+  
+
+ 

@@ -1,10 +1,86 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from config.db import db 
-from forms import NuevoProducto
+from forms import NuevoProducto , StockForm , ModificarProducto
 from models import Productos, Kardex
 from sqlalchemy import exc , desc , func
 productos_bp = Blueprint('productos_bp',__name__)
+
+@productos_bp.route('/admin_modificar_prod', methods=['GET','POST'], defaults={'id':None})
+@productos_bp.route('/admin_modificar_prod/<int:id>', methods=['GET','POST'] )
+def admin_modificar_prod(id):
+    idproducto = id 
+    mensaje=''
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    form_prod = ModificarProducto()
+    if request.method == 'GET':
+        datos = Productos.query.filter_by(idProducto=idproducto).first()
+        return render_template("app/admin_modificar_prod.html",form_prod=form_prod , datos=datos)
+    if form_prod.validate_on_submit():
+        idprod = form_prod.idproducto.data 
+        #nombre = form_prod.nombre_producto.data 
+        descripcion = form_prod.descripcion_producto.data 
+        precio = form_prod.precio_producto.data 
+        #Extraer Producto para actualizar.
+        producto = Productos.query.filter_by(idProducto=idprod).filter_by(idvet=idvet).first()
+        #Validar si producto pertenece a Veterinaria.
+        if producto is None:
+            mensaje='Alerta Usted No tiene los permisos para Modificar este Producto'
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        try:
+            producto.descripcion = descripcion
+            producto.precio = precio
+            db.session.commit()
+            mensaje='Producto Modificado'
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+   
+    
+
+@productos_bp.route('/admin_aumentar_stock', methods=['GET','POST'], defaults={'id':None})
+@productos_bp.route('/admin_aumentar_stock/<int:id>', methods=['GET','POST'] )
+def admin_aumentar_stock(id):
+    idproducto = id 
+    mensaje=''
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    form_stock = StockForm()
+    if request.method == 'GET':
+        datos = Productos.query.filter_by(idProducto=idproducto).first()
+        return render_template("app/aumentar_stock.html",form_stock=form_stock , datos=datos)
+    if form_stock.validate_on_submit():
+        idprod = form_stock.idproducto.data
+        cant = form_stock.aumento.data
+        #Validar si producto pertenece a veterinaria.
+        validar = Productos.query.filter_by(idProducto=idprod).filter_by(idvet=idvet).first()
+        if validar is None:
+            mensaje='Alerta Usted No tiene los permisos para Modificar este Producto'
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        try:
+            #Si Pertenece Agregar la Cantidad al Producto.
+            validar.stock = validar.stock + cant
+            #Agregar el Registro al Kardex
+            nuevo_kardex = Kardex(None,'Ingreso',nombre_usuario,validar.nombre,cant,0,idvet,None,None)
+            db.session.add(nuevo_kardex)
+            db.session.commit()
+            mensaje='Se agrego ' + str(cant) + ' de Stock al producto ' + str(validar.idProducto)
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        return "test2"
+    return "test"
 
 @productos_bp.route('/admin_productos', methods=['GET','POST'])
 def admin_productos():

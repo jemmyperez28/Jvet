@@ -132,6 +132,16 @@ class NuevoProducto(FlaskForm):
     precio_producto = FloatField('precio_producto')
     stock_producto = IntegerField('stock_producto')
 
+class StockForm(FlaskForm):
+    idproducto = HiddenField('idproducto')
+    aumento = IntegerField('aumento')
+
+class ModificarProducto(FlaskForm):
+    idproducto = HiddenField('idproducto')
+    nombre_producto = StringField('nombre_producto')
+    descripcion_producto = StringField('descripcion_producto')
+    precio_producto = FloatField('precio_producto')
+
 
 
 

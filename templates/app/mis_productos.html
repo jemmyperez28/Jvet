@@ -83,9 +83,8 @@
                              <td> {{dato.descripcion}} </td>
                              <td> {{dato.precio }} </td>
                              <td> {{dato.stock }} </td>         
-                             <td><a href="#"> Añadir Stock </a>  </td>
-                             <td><a href="#"> Modificar Detalle </a>  </td>
-    
+                             <td><a href="/admin_aumentar_stock/{{dato.idProducto}}"> Añadir Stock </a>  </td>
+                             <td><a href="/admin_modificar_prod/{{dato.idProducto}}"> Modificar Producto </a>  </td>
                          </tr>
                          {% endfor %}
                         </tbody>
