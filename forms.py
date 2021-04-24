@@ -126,6 +126,14 @@ class BuscarAtencion(FlaskForm):
     dni = IntegerField('dni')
     fecha = DateField('fecha')
 
+class NuevoProducto(FlaskForm):
+    nombre_producto = StringField('nombre_producto')
+    descripcion_producto = StringField('descripcion_producto')
+    precio_producto = FloatField('precio_producto')
+    stock_producto = IntegerField('stock_producto')
+
+
+
 
     
 
