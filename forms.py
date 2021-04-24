@@ -141,7 +141,17 @@ class ModificarProducto(FlaskForm):
     nombre_producto = StringField('nombre_producto')
     descripcion_producto = StringField('descripcion_producto')
     precio_producto = FloatField('precio_producto')
-
+class NuevoServicio(FlaskForm):
+    nombre_servicio = StringField('nombre_servicio')
+    tipo_servicio = StringField('tipo_servicio')
+    precio_servicio = StringField('precio_servicio')
+    detalles_servicio = StringField('detalles_servicio')
+class ModificarServicio(FlaskForm):
+    idservicio = HiddenField('idservicio')
+    nombre_servicio = StringField('nombre_servicio')
+    tipo_servicio = StringField('tipo_servicio')
+    precio_servicio = StringField('precio_servicio')
+    detalles_servicio = StringField('detalles_servicio')
 
 
 

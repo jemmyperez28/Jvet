@@ -21,7 +21,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Aumentar Stock</h1> <br> <h1> <a href="/admin_productos">Volver</a></h1>
+            <h1 class="m-0">Nuevo Servicio</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -56,28 +56,37 @@
                 <!-- general form elements -->
                 <div class="card card-primary">
                   <div class="card-header">
-                    <h3 class="card-title">Cantidad</h3>
+                    <h3 class="card-title">Nuevo Servicio</h3>
                   </div>
                   <!-- /.card-header -->
                   <!-- form start -->
-                  <form action="{{ url_for('productos_bp.admin_aumentar_stock') }}" method="post" enctype="multipart/form-data">
-                    {{ form_stock.csrf_token  }}
-                    {{ form_stock.idproducto(value=datos.idProducto)  }}
+                  <form action="{{ url_for('productos_bp.admin_nuevo_servicio') }}" method="post" enctype="multipart/form-data">
+                    {{ form_serv2.csrf_token  }}
                     <div class="card-body">
-                        <div class="form-group">
-                            <label for="nombre">Producto : {{ datos.nombre }}</label>
-                        </div>
-                        <div class="form-group">
-                            <label for="nombre">Stock Actual : {{ datos.stock }}</label>
-                          </div>
-                      <div class="form-group col-md-5" >
-                        <label for="nombre">Cantidad a Aumentar:</label>
-                        {{ form_stock.aumento(class_="form-control" ) }}
+                      <div class="form-group">
+                        <label for="nombre">Nombre Servicio</label>
+                        {{ form_serv2.nombre_servicio(class_="form-control" ) }}
                       </div>
+                      <!--<div class="form-group">
+                        <label for="logo">Seleccione Logo</label> 
+                        <input type="file" class="form-control" onchange="ValidateSize(this)" name="logo" id="logo">
+                      </div> -->
+                      <div class="form-group">
+                        <label for="telefono">Tipo Servicio</label>
+                        {{ form_serv2.tipo_servicio(class_="form-control" ) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="whatsapp">Precio </label>
+                        {{ form_serv2.precio_servicio(class_="form-control" ) }}
+                      </div>
+                      <div class="form-group">
+                        <label for="ciudad">Detalles Servicio</label>
+                        {{ form_serv2.detalles_servicio(class_="form-control" ) }}
+                      </div>             
                     </div>
                     <!-- /.card-body -->
                     <div class="card-footer">
-                      <button type="submit" class="btn btn-primary">Aumentar</button>
+                      <button type="submit" class="btn btn-primary">Nuevo Servicio</button>
                     </div>
                   </form>
                 </div>

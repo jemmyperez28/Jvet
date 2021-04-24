@@ -1,10 +1,117 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from config.db import db 
-from forms import NuevoProducto , StockForm , ModificarProducto
-from models import Productos, Kardex
+from forms import NuevoProducto , StockForm , ModificarProducto , ModificarServicio , NuevoServicio
+from models import Productos, Kardex , Servicios
 from sqlalchemy import exc , desc , func
 productos_bp = Blueprint('productos_bp',__name__)
+
+
+
+@productos_bp.route('/admin_nuevo_servicio', methods=['GET','POST'])
+def admin_nuevo_servicio():
+    mensaje=''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    form_serv2 = NuevoServicio()
+    if request.method == 'GET':
+        return render_template("/app/nuevo_servicio.html", form_serv2=form_serv2)
+    if form_serv2.validate_on_submit():
+        nombre = form_serv2.nombre_servicio.data 
+        descripcion = form_serv2.detalles_servicio.data 
+        precio = form_serv2.precio_servicio.data 
+        tipo = form_serv2.tipo_servicio.data 
+        #Insertar SErvicio 
+        try:
+            nuevo_servicio = Servicios(nombre,tipo,precio,descripcion,idvet)
+            db.session.add(nuevo_servicio)
+            db.session.commit()
+            mensaje='Servicio Agregado SRV0' + str(nuevo_servicio.idServicio)
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_servicios'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+    return "Reinicie App PRDBP38"
+
+@productos_bp.route('/admin_eliminar_serv/<int:id>', methods=['GET','POST'] )
+def admin_eliminar_serv(id):
+    idservicio = id 
+    mensaje=''
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    #Validar si Servicio Pertenece a Veterinaria.
+    servicio = Servicios.query.filter_by(idServicio=idservicio).filter_by(idvet=idvet).first()
+    if servicio is None: 
+        mensaje='Error , No tiene privilegios suficientes para eliminar este Servicio'
+        flash(mensaje)
+        return redirect(url_for('productos_bp.admin_servicios'))
+    try:
+        Servicios.query.filter_by(idServicio=idservicio).filter_by(idvet=idvet).delete()
+        db.session.commit()
+        mensaje = "Servicio eliminado "
+        flash(mensaje)
+        return redirect(url_for('productos_bp.admin_servicios'))
+    except exc.SQLAlchemyError as e:
+        mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+        flash(mensaje)
+        return redirect(url_for('productos_bp.admin_productos'))
+    return "Reinicie App PRDBP32"
+
+
+
+
+@productos_bp.route('/admin_modificar_serv', methods=['GET','POST'], defaults={'id':None})
+@productos_bp.route('/admin_modificar_serv/<int:id>', methods=['GET','POST'] )
+def admin_modificar_serv(id):
+    idservicio = id 
+    mensaje=''
+    iduservet = session['iduservet']
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    form_serv = ModificarServicio()
+    if request.method == 'GET':
+        datos = Servicios.query.filter_by(idServicio=idservicio).first()
+        return render_template("app/admin_modificar_serv.html",form_serv=form_serv , datos=datos)
+    if form_serv.validate_on_submit():
+        idservicio = form_serv.idservicio.data
+        nombre = form_serv.nombre_servicio.data 
+        tipo = form_serv.tipo_servicio.data 
+        detalles = form_serv.detalles_servicio.data 
+        precio = form_serv.precio_servicio.data
+        #Validar si Servicio Pertenece a veterinaria.
+        servicio = Servicios.query.filter_by(idServicio=idservicio).filter_by(idvet=idvet).first()
+        if servicio is None: 
+            mensaje='Error , No tiene privilegios suficientes para modificar este Servicio'
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_servicios'))
+        try:
+            servicio.nombre = nombre
+            servicio.tipo = tipo
+            servicio.detalles = detalles 
+            servicio.precio = precio
+            db.session.commit()
+            mensaje='OK , Se Modifico el Servicio : '  + str(servicio.idServicio)
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_servicios'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        return "Reinicie App PRDBP38"
+
+@productos_bp.route('/admin_servicios', methods=['GET','POST'])
+def admin_servicios():
+    mensaje=''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    if request.method == 'GET':
+        datos = Servicios.query.filter_by(idvet=idvet).all()
+        return render_template("/app/mis_servicios.html",datos=datos)
 
 @productos_bp.route('/admin_modificar_prod', methods=['GET','POST'], defaults={'id':None})
 @productos_bp.route('/admin_modificar_prod/<int:id>', methods=['GET','POST'] )
@@ -117,9 +224,9 @@ def admin_nuevo_producto():
             db.session.commit()
             mensaje = "Nuevo Producto Añadido , Codigo del Producto : " + str(nuevo_producto.idProducto)
             flash(mensaje)
-            return redirect(url_for('productos_bp.admin_nuevo_producto'))
+            return redirect(url_for('productos_bp.admin_productos'))
         except exc.SQLAlchemyError as e:
             mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
             flash(mensaje)
-            return redirect(url_for('productos_bp.admin_nuevo_producto'))
+            return redirect(url_for('productos_bp.admin_productos'))
     return "Reinicie app 39productosbp"

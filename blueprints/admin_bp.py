@@ -14,8 +14,6 @@ from sqlalchemy import exc , desc , func
 from datetime import datetime
 import datetime as dt 
 
-
-
 admin_bp = Blueprint('admin_bp',__name__)
 
 @admin_bp.route('/index_admin', methods=['GET','POST'])
@@ -535,7 +533,6 @@ def reporte_atencion(id):
         return render_template("app/admin_reporte_atencion2.html" , datos=datos , total=total) 
     return "test"
 
-
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
 @admin_bp.route('/editar_atencion/<int:id>', methods=['GET','POST'])
 def editar_atencion(id):
@@ -730,7 +727,7 @@ def eliminar_atenciondetalle(id):
     iduservet =  session['iduservet'] 
     idvet = session['vet_id']
     idatenciondetalle = id
-    #Validar si Atencion Pertenece a la Veterinaria. FALTA HACER JOIN
+    #Validar si Atencion Pertenece a la Veterinaria.
     validador =  AtencionDetalle.query.filter_by(idatenciondetalle=idatenciondetalle).first()
     permiso = Atencion.query.filter_by(idvet=idvet).join(AtencionDetalle, AtencionDetalle.idatencion == Atencion.idatencion).filter_by(idatenciondetalle=idatenciondetalle).first()
 
