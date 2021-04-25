@@ -127,27 +127,27 @@ class BuscarAtencion(FlaskForm):
     fecha = DateField('fecha')
 
 class NuevoProducto(FlaskForm):
-    nombre_producto = StringField('nombre_producto')
-    descripcion_producto = StringField('descripcion_producto')
-    precio_producto = FloatField('precio_producto')
-    stock_producto = IntegerField('stock_producto')
+    nombre_producto = StringField('nombre_producto',validators=[InputRequired()])
+    descripcion_producto = StringField('descripcion_producto',validators=[InputRequired()])
+    precio_producto = FloatField('precio_producto',validators=[InputRequired()])
+    stock_producto = IntegerField('stock_producto',validators=[InputRequired()])
 
 class StockForm(FlaskForm):
-    idproducto = HiddenField('idproducto')
-    aumento = IntegerField('aumento')
+    idproducto = HiddenField('idproducto',validators=[InputRequired()])
+    aumento = IntegerField('aumento',validators=[InputRequired()])
 
 class ModificarProducto(FlaskForm):
-    idproducto = HiddenField('idproducto')
+    idproducto = HiddenField('idproducto',validators=[InputRequired()])
     nombre_producto = StringField('nombre_producto')
     descripcion_producto = StringField('descripcion_producto')
     precio_producto = FloatField('precio_producto')
 class NuevoServicio(FlaskForm):
-    nombre_servicio = StringField('nombre_servicio')
-    tipo_servicio = StringField('tipo_servicio')
-    precio_servicio = StringField('precio_servicio')
-    detalles_servicio = StringField('detalles_servicio')
+    nombre_servicio = StringField('nombre_servicio',validators=[InputRequired()])
+    tipo_servicio = StringField('tipo_servicio',validators=[InputRequired()])
+    precio_servicio = StringField('precio_servicio',validators=[InputRequired()])
+    detalles_servicio = StringField('detalles_servicio',validators=[InputRequired()])
 class ModificarServicio(FlaskForm):
-    idservicio = HiddenField('idservicio')
+    idservicio = HiddenField('idservicio',validators=[InputRequired()])
     nombre_servicio = StringField('nombre_servicio')
     tipo_servicio = StringField('tipo_servicio')
     precio_servicio = StringField('precio_servicio')
