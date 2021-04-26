@@ -20,7 +20,7 @@
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0"> Modulo Atencion </h1> 
+          <h1 class="m-0"> Atencion/Venta Express </h1> 
         </div><!-- /.col -->
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -47,14 +47,7 @@
 
       <div class="container-fluid">      
           <!-- Comprobador DNI-->
-          <div class="row">
-              <div class="col-md-3">  
-                <form class="form-horizontal" action="{{ url_for('admin_bp.admin_dni_atencion') }}" method="get">
-                  <input type="text" class="form-control" name="dni" size="10" placeholder="NRO DNI">
-                  <button type="submit" class="btn btn-block btn-success btn-sm">Comprobar DNI</button>-
-                </form>
-              </div>              
-          </div>
+          
           <div class="row">
             <!-- left column -->
             <div class="col-md-12">
@@ -66,46 +59,32 @@
                 <!-- /.card-header -->
                 <!-- form start -->
 
-                <form class="form-horizontal"  action="{{ url_for('admin_bp.admin_atencion') }}" method="post" >
+                <form class="form-horizontal"  action="{{ url_for('admin_bp.admin_atencion_express') }}" method="post" >
                   {{ form_atencion.csrf_token }}
                   <div class="card-body">
                     <div class="form-group row">
-                      {% if diccionario is defined %} 
-                      {{form_atencion.id_cliente(value=diccionario.id_cliente)}}
-                      {% endif %}
                     <div class = "col-sm-2">
                       <label for="dni">DNI : </label>
                     </div>
                     <div class="col-sm-3">
-                        {% if diccionario is defined %}
-                        <label for="dni" >{{diccionario.dni}}</label>
-                        {% else %}
-                        <label for="dni" > - </label>
-                        {% endif %}
+                        {{ form_atencion.dni(class_="form-control")}}
                     </div>
                     <div class="col-sm-2">
-                      <label for="nombre">Nombre Cliente : </label>
+                      <label for="nombre">Nombre y Apellidos</label>
                     </div>
                       <div class="col-sm-3">                 
-                          {% if diccionario is defined %}
-                          <label for="nombre">{{diccionario.nombre}}</label>
-                          {% else %}
-                          <label for="nombre"> - </label>
-                          {% endif %}
+                        {{ form_atencion.nombre_apellidos(class_="form-control")}}
                       </div>
                     </div>
                     <div class="form-group row">
-                      <div class = "col-sm-2">
-                        <label for="apellido" >Apellido : </label>
-                      </div>        
-                      <div class="col-sm-3">
-                        {% if diccionario is defined %}
-                        <label for="apellidos"  >{{diccionario.apellidos}}</label>
-                        {% else %}
-                        <label for="apellidos"  > - </label>
-                        {% endif %}
-                      </div>
-                    </div>
+                        <div class="col-sm-2">
+                          <label for="atendido_por" >e-mail</label>
+                        </div>
+                        <div class="col-sm-3">
+                          {{ form_atencion.email(class_="form-control")}}
+                        </div>
+                            
+                      </div> 
                     <div class="form-group row">
                       <div class="col-sm-2">
                         <label for="atendido_por" >Atendido Por</label>
@@ -165,9 +144,7 @@
                      {% if form_atencion.errors %}
                       {{ form_atencion.errors }}
                       {% endif %}
-                     {% if diccionario is defined %}
                    <center> <button type="submit" class="btn btn-primary">Nueva Atencion </button></center>
-                    {% endif %}
                   </div>
                 </form>
               </div>

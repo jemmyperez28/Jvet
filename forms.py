@@ -90,6 +90,23 @@ class AtencionForm(FlaskForm):
     def buscar_empleado(self,idvet):
         self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
 
+class AtencionForm2(FlaskForm):
+    #id_cliente = HiddenField('id_cliente',validators=[InputRequired()])
+    #mascota = SelectField(coerce=str)
+    #mascota = SelectField('mascota',coerce=int)
+    dni = StringField('dni')
+    nombre_apellidos = StringField('nombre_apellidos')
+    mascota = StringField('mascota')
+    email = StringField('email')
+    atendido_por = SelectField('atendido_por',coerce=str)
+    sintomas = TextAreaField('sintomas')
+    informe = TextAreaField('informe')
+    receta = TextAreaField('receta')
+    observaciones = TextAreaField('observaciones')
+    def buscar_empleado(self,idvet):
+        self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
+
+
 class AtencionServicioForm(FlaskForm):
     precio = SelectField('precio',coerce=float)
     idatencion = HiddenField('idatencion')

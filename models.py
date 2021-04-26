@@ -191,8 +191,11 @@ class Atencion(db.Model):
     atendido_por = db.Column(db.String(100))
     creado_por = db.Column(db.String(100))
     estado_atencion = db.Column(db.String(100))
+    nombre_apellido = db.Column(db.String(100))
+    dni = db.Column(db.String(20))
+    email = db.Column(db.String(100))
     relacionatenciondetalle = db.relationship('AtencionDetalle',backref='atencion',lazy=True)
-    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion):
+    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellido,dni,email):
         self.fecha_atencion = fecha_atencion 
         self.receta = receta
         self.sintomas = sintomas
@@ -205,6 +208,9 @@ class Atencion(db.Model):
         self.atendido_por = atendido_por
         self.creado_por = creado_por
         self.estado_atencion = estado_atencion
+        self.nombre_apellido = nombre_apellido
+        self.dni = dni 
+        self.email = email
 
 class Empleado(db.Model):
     idempleado = db.Column(db.Integer, primary_key = True)

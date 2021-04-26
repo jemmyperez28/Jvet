@@ -98,8 +98,9 @@
                   <table class="table table-hover text-nowrap">
                     <thead>
                       <tr>
-                        <th>Fecha Atencion</th>
                         <th>Codigo Atencion</th>
+                        <th>Fecha Atencion</th>
+                        <th> DNI </th>
                         <th>Cliente</th>              
                         <th>Mascota</th>
                       </tr>
@@ -107,9 +108,10 @@
                     <tbody>
                      {% for dato in datos %}
                      <tr>
-                         <td> {{ dato.fecha_atencion }} </td>
                          <td> COD{{ dato.idatencion }} </td>
-                         <td> {{ dato.nombre }} </td>
+                         <td> {{ dato.fecha_atencion }} </td>  
+                         <td> {{ dato.dni }} </td>                        
+                         <td> {{ dato.nombre_apellido }} </td>
                          <td> {{ dato.nombremascota }} </td>                         
                          <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a>  </td>
 

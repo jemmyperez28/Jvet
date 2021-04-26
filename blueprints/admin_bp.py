@@ -1,6 +1,6 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre , BuscarAtencion
+from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre , BuscarAtencion, AtencionForm2
 from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex
 from funciones import encriptar
 from config.db import db 
@@ -77,7 +77,9 @@ def admin_reporte_atencion():
     if request.method == 'GET':
         #Valida nivel de usuario.
         hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-        datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+        #datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+        #' and date(Atencion.fecha_atencion) = CURDATE()')
+        datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
         ' and date(Atencion.fecha_atencion) = CURDATE()')
         return render_template("/app/admin_reporte_atencion.html",datos=datos, form_buscar=form_buscar)
     if request.method == "POST":
@@ -92,11 +94,11 @@ def admin_reporte_atencion():
                 flash(mensaje)
                 return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
             #print(cliente.idcliente)
-            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            datos = db.engine.execute('select * from atencion  where atencion.idvet ='+ str(idvet) +
             ' and atencion.idcliente='+str(cliente.idcliente))    
             return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
-            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
             ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
             return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is not None and fecha is not None:
@@ -115,7 +117,7 @@ def admin_historial_atencion():
     if request.method == 'GET':
         #Valida nivel de usuario
         hoy =  datetime(datetime.today().year, datetime.today().month, datetime.today().day)
-        datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+        datos = db.engine.execute('select * from atencion  where atencion.idvet ='+ str(idvet) +
         ' and date(Atencion.fecha_atencion) = CURDATE()' )
         return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)   
     if request.method == "POST":
@@ -130,11 +132,11 @@ def admin_historial_atencion():
                 flash(mensaje)
                 return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
             #print(cliente.idcliente)
-            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
             ' and atencion.idcliente='+str(cliente.idcliente))    
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
-            datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
+            datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
             ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is not None and fecha is not None:
@@ -338,6 +340,43 @@ def admin_cm():
         return redirect(url_for('admin_bp.admin_cm'))
     return render_template("/app/admin_cm.html" , form_cliente = form_cliente , form_mascota = form_mascota)   
 
+
+@admin_bp.route('/admin_atencion_express', methods=['GET','POST'])
+def admin_atencion_express():
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    form_atencion = AtencionForm2()
+    form_atencion.buscar_empleado(idvet)
+    estado_atencion="abierto"
+    fecha_atencion = None
+    total = 0
+    id_cliente = None
+    creado_por = session['nombre']
+    if request.method == "POST":
+        dni = form_atencion.dni.data
+        nombre_apellidos =form_atencion.nombre_apellidos.data
+        mascota = form_atencion.mascota.data
+        email = form_atencion.email.data
+        atendido_por = form_atencion.atendido_por.data
+        sintomas = form_atencion.sintomas.data
+        informe = form_atencion.informe.data
+        receta = form_atencion.receta.data
+        observaciones = form_atencion.observaciones.data  
+        try:
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellidos,dni,email)
+            db.session.add(nueva_atencion)
+            db.session.commit()
+            mensaje = "Atencion Creada !"
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion_express'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_atencion_express'))
+
+    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion,Atencion.nombre_apellido).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).order_by(Atencion.fecha_atencion.desc()).limit(10).all()
+    return render_template("/app/admin_atencion_express.html",form_atencion=form_atencion,atenciones=atenciones)
+
 @admin_bp.route('/admin_atencion', methods=['GET','POST'])
 def admin_atencion():
     iduservet =  session['iduservet'] 
@@ -357,10 +396,14 @@ def admin_atencion():
         total = 0
         atendido_por = form_atencion.atendido_por.data
         usuario = Uservet.query.filter_by(iduservet=iduservet).first()
+        clientito = Cliente.query.filter_by(idcliente=id_cliente).first()
         creado_por = usuario.nombre
         estado_atencion = "abierto"
+        nombre_ape = str(clientito.nombre + '' + clientito.apellidos)
+        dni = clientito.dni
+        email = clientito.email
         try:
-            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion)
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion,nombre_ape,dni,email)
             db.session.add(nueva_atencion)
             db.session.commit()
             mensaje = "Atencion Creada !"
@@ -370,11 +413,9 @@ def admin_atencion():
             mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_atencion'))
-    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
-
-
+    #atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
+    atenciones = Atencion.query.with_entities(Atencion.idatencion,Atencion.fecha_atencion,Atencion.total,Atencion.nombremascota,Atencion.creado_por,Atencion.estado_atencion,Atencion.nombre_apellido).filter_by(idvet=idvet).filter_by(estado_atencion=estado_atencion).order_by(Atencion.fecha_atencion.desc()).limit(10).all()
     return render_template("/app/admin_atencion.html",form_dni=form_dni,form_atencion=form_atencion,atenciones=atenciones)
-
 
 @admin_bp.route('/admin_dni_atencion', methods=['GET','POST'])
 def admin_dni_atencion(result=None):
@@ -484,7 +525,8 @@ def editar_atencion_padre(id):
     idatencion = id 
     form_padre = AtencionPadre()
     if request.method == "GET":
-        datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones).filter_by(idatencion=idatencion).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre,Cliente.apellidos,Cliente.dni).first()
+        #datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones).filter_by(idatencion=idatencion).filter_by(idvet=idvet).join(Cliente,Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre,Cliente.apellidos,Cliente.dni).first()
+        datos = Atencion.query.with_entities(Atencion.idatencion,Atencion.atendido_por,Atencion.nombremascota,Atencion.sintomas,Atencion.informe,Atencion.receta,Atencion.observaciones,Atencion.nombre_apellido,Atencion.dni,Atencion.email).filter_by(idatencion=idatencion).filter_by(idvet=idvet).first()
         if datos is None:
             mensaje='Error , No Tiene los Privilegios Para ver Esta Atencion'
             flash(mensaje)
@@ -530,7 +572,7 @@ def reporte_atencion(id):
         datos_atencion = Atencion.query.filter_by(idatencion=id_atencion).first()
         total = datos_atencion.total
         datos = AtencionDetalle.query.filter_by(idatencion=id_atencion).all()
-        return render_template("app/admin_reporte_atencion2.html" , datos=datos , total=total) 
+        return render_template("app/admin_reporte_atencion2.html" , datos=datos , total=total ,id_atencion=id_atencion) 
     return "test"
 
 @admin_bp.route('/editar_atencion/', methods=['GET','POST'] , defaults={'id':None})
