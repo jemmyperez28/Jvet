@@ -102,6 +102,7 @@
                       <tr>
                         <th>Codigo Atencion</th>
                         <th>Fecha Atencion</th>
+                        <th>DNI </th>
                         <th>Cliente</th>              
                         <th>Total</th>
                       </tr>
@@ -111,6 +112,7 @@
                      <tr>
                          <td> COD{{ dato.idatencion }}  </td>
                          <td> {{ dato.fecha_atencion }} </td>
+                         <td> {{ dato.dni }} </td>
                          <td> {{ dato.nombre_apellido }} </td>
                          <td> {{ dato.total }} </td>                         
                          <td><a href="/reporte_atencion/{{dato.idatencion}}"> Detalles </a>  </td>

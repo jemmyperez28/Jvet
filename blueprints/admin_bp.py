@@ -87,7 +87,7 @@ def admin_reporte_atencion():
         fecha = form_buscar.fecha.data 
         #Si Solo Busca por DNI.
         if dni is not None and fecha is None:
-            cliente = Cliente.query.filter_by(dni=dni).first()
+            cliente = Atencion.query.filter_by(dni=dni).first()
             if not cliente:
                 mensaje='No se Encontro Informacion para Cliente DNI : ' + str(dni)
                 datos={}
@@ -95,7 +95,7 @@ def admin_reporte_atencion():
                 return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
             #print(cliente.idcliente)
             datos = db.engine.execute('select * from atencion  where atencion.idvet ='+ str(idvet) +
-            ' and atencion.idcliente='+str(cliente.idcliente))    
+            ' and atencion.dni='+str(cliente.dni))    
             return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
@@ -125,15 +125,14 @@ def admin_historial_atencion():
         fecha = form_buscar.fecha.data 
         #Si Solo Busca por DNI.
         if dni is not None and fecha is None:
-            cliente = Cliente.query.filter_by(dni=dni).first()
+            cliente = Atencion.query.filter_by(dni=dni).first()
             if not cliente:
                 mensaje='No se Encontro Informacion para Cliente DNI : ' + str(dni)
                 datos={}
                 flash(mensaje)
                 return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
-            #print(cliente.idcliente)
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-            ' and atencion.idcliente='+str(cliente.idcliente))    
+            ' and atencion.dni='+str(cliente.dni))    
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
