@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms.fields.html5 import DateField
 from wtforms import StringField , PasswordField , IntegerField , SubmitField , FileField , SelectField  , TextAreaField , HiddenField , FloatField
 from wtforms.validators import InputRequired
-from models import Mascota , Empleado , Uservet , Servicios , Productos
+from models import Mascota , Empleado , Uservet , Servicios , Productos , Hora
 
 class RegistroUsuario(FlaskForm):
     dni = IntegerField('dni')
@@ -143,6 +143,9 @@ class BuscarAtencion(FlaskForm):
     dni = IntegerField('dni')
     fecha = DateField('fecha')
 
+class BuscarReservacion(FlaskForm):
+    fecha = DateField('fecha')
+
 class NuevoProducto(FlaskForm):
     nombre_producto = StringField('nombre_producto',validators=[InputRequired()])
     descripcion_producto = StringField('descripcion_producto',validators=[InputRequired()])
@@ -169,6 +172,18 @@ class ModificarServicio(FlaskForm):
     tipo_servicio = StringField('tipo_servicio')
     precio_servicio = StringField('precio_servicio')
     detalles_servicio = StringField('detalles_servicio')
+
+class NuevaReserva(FlaskForm):
+    dni = StringField('dni',validators=[InputRequired()])
+    asunto = StringField('asunto',validators=[InputRequired()])
+    encargado = SelectField('encargado',coerce=str,validators=[InputRequired()])
+    fecha = DateField('fecha',validators=[InputRequired()])
+    hora_inicio = SelectField('hora_inicio' , coerce=str,validators=[InputRequired()])
+    def buscar_empleado(self,idvet):
+        self.encargado.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
+    def cargar_horas(self,idvet):
+        self.hora_inicio.choices = [(hora.hora, hora.hora) for hora in Hora.query.all()]
+
 
 
 

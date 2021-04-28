@@ -6,8 +6,6 @@ from models import Productos, Kardex , Servicios
 from sqlalchemy import exc , desc , func
 productos_bp = Blueprint('productos_bp',__name__)
 
-
-
 @productos_bp.route('/admin_nuevo_servicio', methods=['GET','POST'])
 def admin_nuevo_servicio():
     mensaje=''
@@ -59,10 +57,7 @@ def admin_eliminar_serv(id):
         mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
         flash(mensaje)
         return redirect(url_for('productos_bp.admin_productos'))
-    return "Reinicie App PRDBP32"
-
-
-
+    return "Reinicie App PRDBP60"
 
 @productos_bp.route('/admin_modificar_serv', methods=['GET','POST'], defaults={'id':None})
 @productos_bp.route('/admin_modificar_serv/<int:id>', methods=['GET','POST'] )

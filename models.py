@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime , func , MetaData , Float , UniqueConstraint
+from sqlalchemy import Column, Integer, DateTime , func , MetaData , Float , UniqueConstraint , Date
 from datetime import datetime
 from config.db import db
 
@@ -20,6 +20,7 @@ class Vet(db.Model):
     relacionempleado = db.relationship('Empleado',backref='vet',lazy=True)
     relacionproductos = db.relationship('Productos',backref='vet',lazy=True)
     relacionkardex = db.relationship('Kardex',backref='vet',lazy=True)
+    relacionreservacion = db.relationship('Reservacion',backref='vet',lazy=True)
 
     def __init__(self,nombre,logo,imagen,telefono,whatsapp,acceso,ciudad,distrito,direccion,creado):
         self.nombre = nombre
@@ -194,6 +195,7 @@ class Atencion(db.Model):
     nombre_apellido = db.Column(db.String(100))
     dni = db.Column(db.String(20))
     email = db.Column(db.String(100))
+    idreservacion = db.Column(db.Integer)
     relacionatenciondetalle = db.relationship('AtencionDetalle',backref='atencion',lazy=True)
     def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellido,dni,email):
         self.fecha_atencion = fecha_atencion 
@@ -257,6 +259,38 @@ class Kardex(db.Model):
         self.idvet=idvet 
         self.idatedet=idatedet
         self.idordendet=idordendet
+
+class Reservacion(db.Model):
+    idreservacion = db.Column(db.Integer,primary_key=True)
+    idvet = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
+    dni = db.Column(db.String(20))
+    nombre_apellido = db.Column(db.String(100))
+    telefono = db.Column(db.String(100))
+    email = db.Column(db.String(100))
+    fecha = db.Column(db.Date)
+    hora_inicio = db.Column(db.String(20))
+    hora_final = db.Column(db.String(20))
+    observacion = db.Column(db.String(100))
+    encargado = db.Column(db.String(100))
+    estado_reservacion = db.Column(db.String(100)) 
+    def __init__(self,idvet,dni,nombre_apellido,telefono,email,fecha,hora_inicio,hora_final,observacion,encargado,estado_reservacion):
+        self.idvet=idvet
+        self.dni=dni
+        self.nombre_apellido=nombre_apellido
+        self.telefono=telefono
+        self.email=email 
+        self.fecha=fecha
+        self.hora_inicio = hora_inicio 
+        self.hora_final = hora_final 
+        self.observacion = observacion
+        self.encargado = encargado
+        self.estado_reservacion = estado_reservacion
+
+class Hora(db.Model):
+    idhora = db.Column(db.Integer,primary_key=True)
+    hora = db.Column(db.String(100))
+    def __init__(self,hora):
+        self.hora=hora
 
 
 

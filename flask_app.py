@@ -4,6 +4,7 @@ from flask_migrate import Migrate
 from blueprints.login_bp import login 
 from blueprints.admin_bp import admin_bp
 from blueprints.productos_bp import productos_bp
+from blueprints.otros_bp import otros_bp
 
 
 #Inicializacion de Variables 
@@ -16,6 +17,7 @@ migrate = Migrate(app, db)
 app.register_blueprint(login)
 app.register_blueprint(admin_bp)
 app.register_blueprint(productos_bp)
+app.register_blueprint(otros_bp)
 
 #Para Desarrollo
 if __name__ == '__main__':
