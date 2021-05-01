@@ -1,6 +1,7 @@
 from sqlalchemy import Column, Integer, DateTime , func , MetaData , Float , UniqueConstraint , Date
 from datetime import datetime
 from config.db import db
+import pytz
 
 class Vet(db.Model):
     idvet = db.Column(db.Integer, primary_key = True)
@@ -13,7 +14,7 @@ class Vet(db.Model):
     ciudad = db.Column(db.String(100))
     distrito = db.Column(db.String(100))
     direccion = db.Column(db.String(100))
-    creado = db.Column(db.DateTime,default=datetime.utcnow)
+    creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
     uservets = db.relationship('Uservet',backref='vet',lazy=True)
     relacionservicios = db.relationship('Servicios',backref='vet',lazy=True)
     relacionatencion = db.relationship('Atencion',backref='vet',lazy=True)
@@ -45,7 +46,7 @@ class Uservet(db.Model):
     tipo_uservet = db.Column(db.String(250))
     estado_uservet = db.Column(db.String(250))
     validado = db.Column(db.String(250))
-    creado = db.Column(db.DateTime,default=datetime.utcnow)
+    creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')) )
     vet_id = db.Column(db.Integer,db.ForeignKey('vet.idvet'))
     idsuscripcion = db.Column(db.Integer,db.ForeignKey('suscripcion.idsuscripcion'))
     idvendedor = db.Column(db.Integer,db.ForeignKey('vendedor.idvendedor'))
@@ -180,7 +181,8 @@ class AtencionDetalle(db.Model):
 
 class Atencion(db.Model):
     idatencion = db.Column(db.Integer, primary_key = True)
-    fecha_atencion = db.Column(db.DateTime,default=datetime.utcnow)
+    # hoy = datetime.now(pytz.timezone('America/Lima')) 
+    fecha_atencion = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
     receta = db.Column(db.String(300))
     sintomas = db.Column(db.String(300))
     informe = db.Column(db.String(300))
@@ -197,7 +199,7 @@ class Atencion(db.Model):
     email = db.Column(db.String(100))
     idreservacion = db.Column(db.Integer)
     relacionatenciondetalle = db.relationship('AtencionDetalle',backref='atencion',lazy=True)
-    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellido,dni,email):
+    def __init__(self,fecha_atencion,receta,sintomas,informe,observaciones,nombremascota,total,idcliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellido,dni,email,idreservacion):
         self.fecha_atencion = fecha_atencion 
         self.receta = receta
         self.sintomas = sintomas
@@ -213,6 +215,7 @@ class Atencion(db.Model):
         self.nombre_apellido = nombre_apellido
         self.dni = dni 
         self.email = email
+        self.idreservacion = idreservacion
 
 class Empleado(db.Model):
     idempleado = db.Column(db.Integer, primary_key = True)
@@ -240,7 +243,7 @@ class Empleado(db.Model):
 
 class Kardex(db.Model):
     idkardex = db.Column(db.Integer,primary_key=True)
-    fecha_kardex = db.Column(db.DateTime,default=datetime.utcnow)
+    fecha_kardex = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')) )
     tipo = db.Column(db.String(30))
     usuario = db.Column(db.String(50))
     producto = db.Column(db.String(50))

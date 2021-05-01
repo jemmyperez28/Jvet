@@ -183,6 +183,23 @@ class NuevaReserva(FlaskForm):
         self.encargado.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
     def cargar_horas(self,idvet):
         self.hora_inicio.choices = [(hora.hora, hora.hora) for hora in Hora.query.all()]
+class AtenderReservacion(FlaskForm):
+    idreservacion =  HiddenField('idreservacion',validators=[InputRequired()])
+    dni = StringField('dni',validators=[InputRequired()])
+    nombre_apellido = StringField('nombre_apellido')
+    email = StringField('email')
+    mascota = SelectField('mascota',coerce=str)
+    atendido_por = SelectField('atendido_por',coerce=str)
+    sintomas = TextAreaField('sintomas')
+    informe = TextAreaField('informe')
+    receta = TextAreaField('receta')
+    observaciones = TextAreaField('observaciones')
+
+    def buscar_mascota(self,idcliente):
+        self.mascota.choices = [(mascota.nombre, mascota.nombre) for mascota in Mascota.query.filter_by(idcliente=idcliente).all()]    
+    def buscar_empleado(self,idvet):
+        self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
+
 
 
 

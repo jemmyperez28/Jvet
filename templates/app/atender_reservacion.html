@@ -1,0 +1,149 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0"> Modulo Atencion </h1> 
+        </div><!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+          </ol>
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+  <!-- Main content -->
+  <section class="content"> 
+  {% with messages = get_flashed_messages() %}
+  {% if messages  %}
+  {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}     
+
+      <div class="container-fluid">      
+          <!-- Comprobador DNI-->
+          <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+              <!-- general form elements -->
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title"> Atender Reservacion </h3>
+                </div>
+                <!-- /.card-header -->
+                <!-- form start -->
+                <form class="form-horizontal"  action="{{ url_for('otros_bp.crear_atencion') }}" method="post" >
+                  {{ form_res.csrf_token }}
+                  {{ form_res.idreservacion(value=datos.idreservacion)}}
+                  <div class="card-body">
+                    <div class="form-group row">
+                    <div class = "col-sm-2">
+                      <label for="dni">DNI : </label>
+                    </div>
+                    <div class="col-sm-3">  
+                      {{ form_res.dni(class_="form-control" , value=datos.dni ,readonly=True) }}
+                    </div>
+                    <div class="col-sm-2">
+                      <label for="nombre">Nombre Cliente : </label>
+                    </div>
+                      <div class="col-sm-3">                 
+                        {{ form_res.nombre_apellido(class_="form-control" , value=datos.nombre_apellido, readonly=True) }}
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class = "col-sm-2">
+                        <label for="apellido" > Email : </label>
+                      </div>        
+                      <div class="col-sm-3">
+                        {{ form_res.email(class_="form-control" , value=datos.email, readonly=True)}}
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="atendido_por" >Atendido Por</label>
+                      </div>
+                      <div class="col-sm-3">
+                        {{ form_res.atendido_por(class_="form-control")}}
+                      </div>
+                      <div class="col-sm-2">
+                        <label for="mascota" >Mascota : </label> 
+                      </div>    
+                      <div class="col-sm-3">
+                        {{ form_res.mascota(class_="form-control")}}
+                      </div>        
+                    </div> 
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="sintomas"  >Sintomas</label>
+                      </div>         
+                      <div class="col-sm-3">
+                        {{ form_res.sintomas(class_="form-control" , rows=3) }}
+                                             
+                      </div>
+                      <div class="col-sm-2">
+                     <label for="informe"  >Informe</label>
+                      </div> 
+                      <div class="col-sm-3">
+                        {{ form_res.informe(class_="form-control" , rows=3) }}
+                                                                 
+                      </div>  
+                    </div>      
+                    <div class="form-group row">
+                      <div class="col-sm-2">
+                        <label for="receta">Receta</label>
+                      </div>         
+                      <div class="col-sm-3">
+                        {{ form_res.receta(class_="form-control" , rows=3) }}
+                                         
+                      </div>
+                      <div class="col-sm-2">
+                     <label for="observaciones"  >Observaciones</label>
+                      </div> 
+                      <div class="col-sm-3">
+                        {{ form_res.observaciones(class_="form-control" , rows=3) }}
+                                                             
+                      </div>  
+                    </div>             
+                   <!-- /.card-body -->
+                   <div class="card-footer">
+                     {% if form_res.errors %}
+                      {{ form_res.errors }}
+                      {% endif %}
+                   <center> <button type="submit" class="btn btn-primary">Nueva Atencion </button></center>
+                  </div>
+                </form>
+              </div>
+                <!-- /.card -->            
+          </div> 
+         </div>
+         </div>
+
+    </section>
+<!-- /.content -->
+  <!-- /.content-wrapper -->
+  {% endblock %}

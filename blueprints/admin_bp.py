@@ -362,7 +362,7 @@ def admin_atencion_express():
         receta = form_atencion.receta.data
         observaciones = form_atencion.observaciones.data  
         try:
-            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellidos,dni,email)
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,idvet,atendido_por,creado_por,estado_atencion,nombre_apellidos,dni,email,None)
             db.session.add(nueva_atencion)
             db.session.commit()
             mensaje = "Atencion Creada !"
@@ -402,7 +402,7 @@ def admin_atencion():
         dni = clientito.dni
         email = clientito.email
         try:
-            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion,nombre_ape,dni,email)
+            nueva_atencion = Atencion(fecha_atencion,receta,sintomas,informe,observaciones,mascota,total,id_cliente,usuario.vet_id,atendido_por,creado_por,estado_atencion,nombre_ape,dni,email,None)
             db.session.add(nueva_atencion)
             db.session.commit()
             mensaje = "Atencion Creada !"
