@@ -200,7 +200,8 @@ class AtenderReservacion(FlaskForm):
     def buscar_empleado(self,idvet):
         self.atendido_por.choices = [(empleado.nombre, empleado.nombre) for empleado in Empleado.query.filter_by(idvet=idvet).all()]
 
-
+class EmpleadosForm(FlaskForm):
+    nombre = StringField('nombre',validators=[InputRequired()])
 
 
 

@@ -87,6 +87,7 @@
                   <table class="table table-hover text-nowrap">
                     <thead>
                       <tr>
+                        <th> Estado </th>
                         <th> Codigo </th>
                         <th> Fecha </th>
                         <th> Hora </th>
@@ -98,8 +99,9 @@
                     </thead>
                     <tbody>
                     {% if datos %}
-                     {% for dato in datos %}
+                    {% for dato in datos %}
                      <tr>
+                      <td> {{ dato.estado_reservacion }} </td>
                       <td> RSV0{{ dato.idreservacion }} </td>
                          <td> {{ dato.fecha }} </td>
                          <td> {{ dato.hora_inicio }} </td>  
@@ -108,7 +110,7 @@
                          <td> {{ dato.encargado }} </td>
                          <td> {{ dato.observacion }} </td>
                          <td><a href="/atender_reservacion/{{dato.idreservacion}}"> Atender </a>  </td>
-                         <td><a href=""> Eliminar </a>  </td>
+                         <td><a href="/cancelar_reservacion/{{dato.idreservacion}}"> Cancelar </a>  </td>
                      </tr>
                      {% endfor %}                    
                      {% endif %}
