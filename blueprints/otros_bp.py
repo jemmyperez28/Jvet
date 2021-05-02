@@ -77,6 +77,9 @@ def crear_atencion():
             db.session.add(nueva_atencion)
             db.session.commit()
             mensaje = "Atencion Creada !"
+            res = Reservacion.query.filter_by(idreservacion=idreservacion).first()
+            res.estado_reservacion="atendido"
+            db.session.commit()
             flash(mensaje)
             return redirect(url_for('admin_bp.admin_atencion'))
         except exc.SQLAlchemyError as e:
