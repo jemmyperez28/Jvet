@@ -8,7 +8,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Nuestros Afiliados</h1>
+            <h1>Nosotros</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -21,7 +21,28 @@
 
     <section class="content">
 
-        <!-- Default box -->
+        <!-- Cabecera -->
+        <div class="card card-solid">
+          <div class="card-body pb-0">
+            <div class="form-group row">
+            <div class="col-md-3">
+              <img src="{{ url_for('static', filename='app/dist/img/logo.png') }} " alt="user-avatar" class="img-circle img-fluid">
+          </div>
+          <div class="col-md-5">
+            <img src="{{ url_for('static', filename='app/dist/img/top.png') }} " alt="user-avatar" class="img-circle img-fluid">
+        </div>
+        </div>
+        </div>
+
+        <section class="content-header">
+          <div class="container-fluid">
+            <div class="row mb-2">
+              <div class="col-sm-6">
+                <h1>Nuestros Afiliados</h1>
+              </div>
+            </div>
+          </div><!-- /.container-fluid -->
+        </section>
         <div class="card card-solid">
           <div class="card-body pb-0">
             <div class="row d-flex align-items-stretch">
@@ -36,7 +57,7 @@
                     <div class="row">
                       <div class="col-7">
                         <h2 class="lead"><b>{{ dato.nombre }}</b></h2>
-                        <p class="text-muted text-sm"><b> </b> Productos / Servicios / Atenciones </p>
+                        <p class="text-muted text-sm"><b> </b> {{ dato.ciudad }} </p>
                         <ul class="ml-4 mb-0 fa-ul text-muted">
                           <li class="small"><span class="fa-li"><i class="fas fa-lg fa-building"></i></span> Direccion : {{ dato.direccion }} , {{ dato.distrito }}</li>
                           <li class="small"><span class="fa-li"><i class="fas fa-lg fa-phone"></i></span> Telefono #: {{ dato.telefono }}</li>
@@ -56,8 +77,8 @@
                       <a href="#" class="btn btn-sm bg-teal">
                         <i class="fas fa-comments"></i>
                       </a>
-                      <a href="#" class="btn btn-sm btn-primary">
-                        <i class="fas fa-user"></i> Ver Perfil
+                      <a href="/{{dato.nombre_unico}}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-user"></i> Perfil
                       </a>
                     </div>
                   </div>
