@@ -80,7 +80,7 @@ def admin_reporte_atencion():
         #datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
         #' and date(Atencion.fecha_atencion) = CURDATE()')
         datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-        ' and date(Atencion.fecha_atencion) = CURDATE()')
+        ' and date(atencion.fecha_atencion) = CURDATE()')
         return render_template("/app/admin_reporte_atencion.html",datos=datos, form_buscar=form_buscar)
     if request.method == "POST":
         dni = form_buscar.dni.data 
