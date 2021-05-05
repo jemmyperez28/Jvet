@@ -190,9 +190,10 @@ def admin_productos():
     iduservet =  session['iduservet'] 
     idvet = session['vet_id']
     nombre_usuario = session['nombre']
+    form_producto2 = NuevoProducto()
     if request.method == 'GET':
         datos = Productos.query.filter_by(idvet=idvet).all()
-        return render_template("/app/mis_productos.html",datos=datos)
+        return render_template("/app/mis_productos.html",datos=datos,form_producto2=form_producto2)
 
 @productos_bp.route('/admin_nuevo_producto', methods=['GET','POST'])
 def admin_nuevo_producto():

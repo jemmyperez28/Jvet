@@ -17,6 +17,11 @@ def index_anon(nom):
         productos = Productos.query.filter_by(idvet=datos.idvet).all()
         servicios = Servicios.query.filter_by(idvet=datos.idvet).all()
         empleados = Empleado.query.filter_by(idvet=datos.idvet).all()
+        print(productos,servicios,empleados)
         return render_template("/app/anon_vet.html",datos=datos , productos=productos,servicios=servicios,empleados=empleados)
+
+
+
+
 
 

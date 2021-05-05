@@ -34,7 +34,7 @@
         </div>
         </div>
 
-        <section class="content-header">
+        <section class="content-header" id ="afiliados">
           <div class="container-fluid">
             <div class="row mb-2">
               <div class="col-sm-6">
@@ -43,9 +43,9 @@
             </div>
           </div><!-- /.container-fluid -->
         </section>
-        <div class="card card-solid">
+        <div class="card card-solid" >
           <div class="card-body pb-0">
-            <div class="row d-flex align-items-stretch">
+            <div class="row d-flex align-items-stretch" >
             <!--Espacio que se repetira en cada FOR-->
             {% for dato in datos %}
               <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch">
@@ -90,6 +90,17 @@
             </div>
           </div>
         </div>
+        
+        <div class="row mb-3" id="contacto">
+          <div class="col-sm-8">
+       
+          <img class="img-fluid"  src="{{ url_for('static', filename='imagenes/contactenos.jpg' ) }}" alt="Photo">    
+          </div>
+          <!-- /.col -->
+
+          <!-- /.col -->
+        </div>
+
     </section>
 </div>
 
