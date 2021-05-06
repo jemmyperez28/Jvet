@@ -104,9 +104,11 @@ def admin_servicios():
     iduservet =  session['iduservet'] 
     idvet = session['vet_id']
     nombre_usuario = session['nombre']
+    form_serv2 = NuevoServicio()
     if request.method == 'GET':
         datos = Servicios.query.filter_by(idvet=idvet).all()
-        return render_template("/app/mis_servicios.html",datos=datos)
+        return render_template("/app/mis_servicios.html",datos=datos,form_serv2 = form_serv2)
+
 
 @productos_bp.route('/admin_modificar_prod', methods=['GET','POST'], defaults={'id':None})
 @productos_bp.route('/admin_modificar_prod/<int:id>', methods=['GET','POST'] )
@@ -194,6 +196,28 @@ def admin_productos():
     if request.method == 'GET':
         datos = Productos.query.filter_by(idvet=idvet).all()
         return render_template("/app/mis_productos.html",datos=datos,form_producto2=form_producto2)
+    if form_producto2.validate_on_submit():
+        nombre = form_producto2.nombre_producto.data 
+        descripcion = form_producto2.descripcion_producto.data 
+        precio = form_producto2.precio_producto.data 
+        stock = form_producto2.stock_producto.data 
+        try:
+            #Agregar a tabla producto.
+            nuevo_producto = Productos(nombre,descripcion,precio,stock,idvet)
+            db.session.add(nuevo_producto)
+            db.session.flush()
+            #Ingresar Registro en Kardex
+            nuevo_kardex = Kardex(None,'Nuevo',nombre_usuario,nuevo_producto.nombre,nuevo_producto.stock,0,idvet,None,None)
+            db.session.add(nuevo_kardex)
+            db.session.commit()
+            mensaje = "Nuevo Producto Añadido , Codigo del Producto : " + str(nuevo_producto.idProducto)
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('productos_bp.admin_productos'))
+    return "Reinicie app 39productosbp"
 
 @productos_bp.route('/admin_nuevo_producto', methods=['GET','POST'])
 def admin_nuevo_producto():

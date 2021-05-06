@@ -69,7 +69,7 @@
                with font-awesome or any other icon font library -->
        
           
-          <li class="nav-header">Informacion</li>
+          <li class="nav-header">Accesos </li>
           <li class="nav-item">
             <a href="{{url_for('admin_bp.index_admin')}}"  class="nav-link">
               <i class="nav-icon far fa-envelope"></i>
@@ -79,6 +79,49 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_cm')}}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Nuevo Cliente / Mascota
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_atencion')}}" class="nav-link">
+              <i class="nav-icon far fa-image"></i>
+              <p>
+                Nueva Atencion
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_atencion_express')}}" class="nav-link">
+              <i class="nav-icon far fa-image"></i>
+              <p>
+                Nueva Venta/Atencion Express
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url_for('otros_bp.otros_reservacion')}}" class="nav-link">
+              <i class="nav-icon far fa-image"></i>
+              <p>
+                Reservaciones
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-image"></i>
+              <p>
+                PetShop
+              </p>
+              <span class="badge badge-info right">Proximamente</span>
+            </a>
+          </li>
+
+          <li class="nav-header"> Configuracion </li>
           <li class="nav-item">
             <a href="{{url_for('admin_bp.admin_info')}}" class="nav-link">
               <i class="nav-icon far fa-envelope"></i>
@@ -91,52 +134,9 @@
             <a href="{{url_for('admin_bp.admin_veterinaria')}}" class="nav-link">
               <i class="nav-icon far fa-envelope"></i>
               <p>
-                Mi Veterinaria
+                * Mi Veterinaria 
               </p>
-            </a>
-          </li>
-          <li class="nav-header">Atencion</li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_atencion')}}" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
-              <p>
-                Nueva Atencion
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_historial_atencion')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Historial Clinica
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_reporte_atencion')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Reporte de Atenciones
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_cm')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Nuevo Cliente / Mascota
-              </p>
-            </a>
-          </li>
-
-           <li class="nav-header">Configuracion</li>
-          <li class="nav-item">
-            <a href="#" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
-              <p>
-                PetShop
-              </p>
-              <span class="badge badge-info right">Proximamente</span>
+              <span class="badge badge-info right"> Obligatorio </span>
             </a>
           </li>
           <li class="nav-item">
@@ -147,20 +147,11 @@
               </p>
             </a>
           </li>
-          <li class="nav-header">Productos/Servicios</li>
           <li class="nav-item"> 
             <a href="{{url_for('productos_bp.admin_productos')}}" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
-                Mis Productos
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('productos_bp.admin_nuevo_producto')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Nuevo Producto
+                Productos
               </p>
             </a>
           </li>
@@ -168,43 +159,36 @@
             <a href="{{url_for('productos_bp.admin_servicios')}}" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
-                Mis Servicios
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('productos_bp.admin_nuevo_servicio')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Nuevo Servicio
+                Servicios
               </p>
             </a>
           </li>
           
-          <li class="nav-header">Reservaciones</li>
+          <li class="nav-header"> Historial </li>
           <li class="nav-item">
-            <a href="{{url_for('otros_bp.otros_reservacion')}}" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
+            <a href="{{url_for('admin_bp.admin_historial_atencion')}}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
               <p>
-                Agendar Reservacion
+                Historia Clinica
               </p>
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{url_for('admin_bp.admin_reporte_atencion')}}" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
-                Reporte de Reservaciones
+                Historial de Ventas
               </p>
             </a>
           </li>
 
-          <li class="nav-header">Contacto </li>
-          <li class="nav-item">
+
+           <li class="nav-header">Operaciones</li>
+           <li class="nav-item">
             <a href="#" class="nav-link">
-              <i class="nav-icon far fa-image"></i>
+              <i class="nav-icon fas fa-columns"></i>
               <p>
-                Representante 
+                Mi Suscripcion
               </p>
             </a>
           </li>
@@ -224,6 +208,25 @@
               </p>
             </a>
           </li>
+         
+          <li class="nav-header">Reportes</li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon far fa-image"></i>
+              <p>
+                Reporte de Ingresos 
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Reporte de Kardex
+              </p>
+            </a>
+          </li>
+        
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->

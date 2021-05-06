@@ -88,6 +88,46 @@
                         </tbody>
                       </table>
                     </div>
+                    <div class="col-md-6">
+                      <!-- general form elements -->
+                      <div class="card card-primary">
+                        <div class="card-header">
+                          <h3 class="card-title">Nuevo Servicio</h3>
+                        </div>
+                        <!-- /.card-header -->
+                        <!-- form start -->
+                        <form action="{{ url_for('productos_bp.admin_nuevo_servicio') }}" method="post" enctype="multipart/form-data">
+                          {{ form_serv2.csrf_token  }}
+                          <div class="card-body">
+                            <div class="form-group">
+                              <label for="nombre">Nombre Servicio</label>
+                              {{ form_serv2.nombre_servicio(class_="form-control" ) }}
+                            </div>
+                            <!--<div class="form-group">
+                              <label for="logo">Seleccione Logo</label> 
+                              <input type="file" class="form-control" onchange="ValidateSize(this)" name="logo" id="logo">
+                            </div> -->
+                            <div class="form-group">
+                              <label for="telefono">Tipo Servicio</label>
+                              {{ form_serv2.tipo_servicio(class_="form-control" ) }}
+                            </div>
+                            <div class="form-group">
+                              <label for="whatsapp">Precio </label>
+                              {{ form_serv2.precio_servicio(class_="form-control" ) }}
+                            </div>
+                            <div class="form-group">
+                              <label for="ciudad">Detalles Servicio</label>
+                              {{ form_serv2.detalles_servicio(class_="form-control" ) }}
+                            </div>             
+                          </div>
+                          <!-- /.card-body -->
+                          <div class="card-footer">
+                            <button type="submit" class="btn btn-primary">Nuevo Servicio</button>
+                          </div>
+                        </form>
+                      </div>
+                      <!-- /.card -->
+                    </div> 
                     <!-- /.card-body -->
                   </div>
                   <!-- /.card -->

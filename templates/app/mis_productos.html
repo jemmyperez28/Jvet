@@ -94,6 +94,48 @@
                   </div>
                   <!-- /.card -->
                 </div>
+
+                <div class="col-md-6">
+                  <!-- general form elements -->
+                  <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">Nuevo Producto</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form action="{{ url_for('productos_bp.admin_nuevo_producto') }}" method="post" enctype="multipart/form-data">
+                      {{ form_producto2.csrf_token  }}
+                      <div class="card-body">
+                        <div class="form-group">
+                          <label for="nombre">Nombre Producto</label>
+                          {{ form_producto2.nombre_producto(class_="form-control" ) }}
+                        </div>
+                        <!--<div class="form-group">
+                          <label for="logo">Seleccione Logo</label> 
+                          <input type="file" class="form-control" onchange="ValidateSize(this)" name="logo" id="logo">
+                        </div> -->
+                        <div class="form-group">
+                          <label for="telefono">Descripcion</label>
+                          {{ form_producto2.descripcion_producto(class_="form-control" ) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="whatsapp">Precio Unitario </label>
+                          {{ form_producto2.precio_producto(class_="form-control" ) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="ciudad">Stock Inicial</label>
+                          {{ form_producto2.stock_producto(class_="form-control" ) }}
+                        </div>             
+                      </div>
+                      <!-- /.card-body -->
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Nuevo Producto</button>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- /.card -->
+                </div> 
+
               </div>
     </section>
     <!-- /.content -->
