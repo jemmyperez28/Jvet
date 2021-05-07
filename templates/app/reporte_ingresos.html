@@ -1,0 +1,147 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Reporte de Ingresos</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}     
+    <form class="form-horizontal"  action="{{ url_for('otros_bp.reporte_ingresos') }}" method="post" >
+      <div class="card-body">
+        <div class="form-group row"> 
+          Parametros : 
+        </div>
+        <div class="form-group row">
+          <div class = "col-sm-1">
+            <label for="dni">Fecha Inicio : </label>
+          </div> 
+          <div class = "col-sm-2">
+            {{ form_rep.fecha_ini(class_="form-control")}}
+          </div> 
+          </div>
+          <div class="form-group row">
+            <div class = "col-sm-1">
+              <label for="fecha">Fecha Fin:</label>
+              
+            </div>
+            <div class ="col-sm-2">
+              {{ form_rep.fecha_fin(class_="form-control") }}
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class = "col-sm-1">
+              <label for="fecha"> Password:</label>
+              
+            </div>
+            <div class ="col-sm-2">
+              {{ form_rep.clave_reporte(class_="form-control") }}
+            </div>
+          </div>
+            <div class="form-group-row">
+            <div class = "col-sm-3">
+              <button type="submit" class="btn btn-primary">Buscar</button>
+            </div>
+          </div>
+        </div>
+    </form>
+        <div class="row">
+            <div class="col-12">
+              <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Resultados de Busqueda</h3>      
+                  <div class="card-tools">
+                    <div class="input-group input-group-sm" style="width: 150px;">
+                      <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
+                      <div class="input-group-append">
+                        <button type="submit" class="btn btn-default">
+                          <i class="fas fa-search"></i>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-0">
+                  <table class="table table-hover text-nowrap">
+                    <thead>
+                      <tr>
+                        <th>Codigo Atencion</th>
+                        <th>Fecha Atencion</th>
+                        <th>Cliente</th>              
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                     {% for dato in datos %}
+                     <tr>
+                         <td> ATE{{ dato.idatencion }} </td>
+                         <td> {{ dato.fecha_atencion }} </td>                     
+                         <td> {{ dato.nombre_apellido }} </td>
+                         <td> {{ dato.total }} </td>                         
+                         <td><a href="/reporte_atencion/{{dato.idatencion}}"> Detalles </a>  </td>   
+                     </tr>          
+                          
+                     {% endfor %}
+                     <tfoot>
+                        <td>Total : </td>
+                        <td>  </td>
+                        <td>  </td>
+                        <td> <b> {{ dato | sum(attribute='total') }} </b> </td>
+ 
+                    </tfoot>
+                    </tbody>
+                  </table>
+                </div>
+                <!-- /.card-body -->
+              </div>
+              <!-- /.card -->
+            </div>
+          </div>
+        
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock %}

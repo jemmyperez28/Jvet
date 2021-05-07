@@ -19,6 +19,7 @@ class Vet(db.Model):
     mision = db.Column(db.String(500))
     mensaje = db.Column(db.String(500))
     nombre_unico = db.Column(db.String(30), unique=True)
+    clave_reporte = db.Column(db.String(200))
     uservets = db.relationship('Uservet',backref='vet',lazy=True)
     relacionservicios = db.relationship('Servicios',backref='vet',lazy=True)
     relacionatencion = db.relationship('Atencion',backref='vet',lazy=True)

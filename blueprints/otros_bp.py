@@ -1,13 +1,44 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from config.db import db 
-from forms import  BuscarReservacion , NuevaReserva , AtenderReservacion , EmpleadosForm
-from models import  Reservacion , Cliente , Atencion , Cliente , Empleado
+from forms import  BuscarReservacion , NuevaReserva , AtenderReservacion , EmpleadosForm , ReporteIngresos
+from models import  Reservacion , Cliente , Atencion , Cliente , Empleado , Vet 
 from sqlalchemy import exc , desc , func
 from datetime import  datetime , timedelta , date
 import pytz
 import dateutil.parser
 otros_bp = Blueprint('otros_bp',__name__)
+
+@otros_bp.route('/reporte_ingresos',methods=['GET','POST'])
+def reporte_ingresos():
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    form_rep = ReporteIngresos()
+    if request.method =="GET":
+        return render_template("/app/reporte_ingresos.html" , form_rep=form_rep)
+    if request.method =="POST":
+        fecha_ini = form_rep.fecha_ini.data 
+        fecha_fin = form_rep.fecha_fin.data 
+        clave_form = form_rep.clave_reporte.data 
+        #Obtener clave del Usuario
+        clave = Vet.query.filter_by(idvet=idvet).first()
+        extraido = clave.clave_reporte
+        if not extraido :
+            mensaje = "Error , Usted No Ha Asignado ninguna Clave de Reporte , Porfavor Contacte con Soporte Para Asignar una"
+            flash(mensaje)
+            return redirect(url_for('otros_bp.reporte_ingresos'))
+        if extraido != clave_form:
+            mensaje = "Error Clave Incorrecta"
+            flash(mensaje)
+            return redirect(url_for('otros_bp.reporte_ingresos'))
+        #if fecha_fin < fecha_ini : 
+        #    mensaje = "Error , La Fecha de Inicio debe ser mayor que la fecha Fin"
+        #    flash(mensaje)
+        #    return redirect(url_for('otros_bp.reporte_ingresos'))
+        datos = db.engine.execute('select * from atencion where atencion.idvet = '+ str(idvet) +
+            ' and DATE(atencion.fecha_atencion)>=\''+str(fecha_ini) +'\'' + ' and DATE(atencion.fecha_atencion)<=\''+str(fecha_fin) +'\'' )
+        return render_template("/app/reporte_ingresos.html" , form_rep=form_rep, datos=datos )        
 
 @otros_bp.route('/eliminar_empleado', methods=['GET','POST'], defaults={'id':None})
 @otros_bp.route('/eliminar_empleado/<int:id>', methods=['GET','POST'] )

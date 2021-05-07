@@ -203,7 +203,10 @@ class AtenderReservacion(FlaskForm):
 class EmpleadosForm(FlaskForm):
     nombre = StringField('nombre',validators=[InputRequired()])
 
-
+class ReporteIngresos(FlaskForm):
+    fecha_ini = DateField('fecha_ini',validators=[InputRequired()])
+    fecha_fin = DateField('fecha_fin',validators=[InputRequired()])
+    clave_reporte = PasswordField('clave_reporte',validators=[InputRequired()])
 
     
 
