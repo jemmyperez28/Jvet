@@ -50,6 +50,7 @@
     {% block usuario %}
    
     {% endblock usuario %}
+
       <!-- SidebarSearch Form -->
       <div class="form-inline">
         <div class="input-group" data-widget="sidebar-search">
@@ -67,7 +68,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-       
+       {% if session['vet_id'] %}
           
           <li class="nav-header">Accesos </li>
           <li class="nav-item">
@@ -136,7 +137,6 @@
               <p>
                 * Mi Veterinaria 
               </p>
-              <span class="badge badge-info right"> Obligatorio </span>
             </a>
           </li>
           <li class="nav-item">
@@ -211,7 +211,7 @@
          
           <li class="nav-header">Reportes</li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{url_for('otros_bp.reporte_ingresos')}}" class="nav-link">
               <i class="nav-icon far fa-image"></i>
               <p>
                 Reporte de Ingresos 
@@ -219,14 +219,24 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{url_for('otros_bp.reporte_kardex')}}" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
                 Reporte de Kardex
               </p>
             </a>
           </li>
-        
+          {% else %}
+          <li class="nav-header">Porfavor Registre su Veterinaria</li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_veterinaria')}}" class="nav-link">
+              <i class="nav-icon far fa-envelope"></i>
+              <p>
+                * Mi Veterinaria 
+              </p>
+            </a>
+          </li>
+          {% endif %}
       <!-- /.sidebar-menu -->
     </div>
     <!-- /.sidebar -->

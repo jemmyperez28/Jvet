@@ -204,13 +204,13 @@ def admin_veterinaria():
                 id_veterinaria = nuevo_vet.idvet
                 usuario.vet_id = id_veterinaria
                 db.session.commit()
-                mensaje='Veterinaria agregada Correctamente , Porfavor Inicie Sesion Nuevamente'
+                
                 if nombre_unico is not None:
                     logo.save(os.path.join(current_app.config['UPLOAD_FOLDER'], nombre_unico))
                     mensaje = mensaje + ' , Se Cargo la Imagen'
+                mensaje='Veterinaria agregada Correctamente , Porfavor Inicie Sesion Nuevamente'    
                 flash(mensaje)
                 return redirect(url_for('login.logout'))
-                #return redirect(url_for('admin_bp.admin_veterinaria'))
             except exc.SQLAlchemyError as e:
                 mensaje='Ocurrio Un Problema Consulte con Soporte'
                 flash(mensaje)

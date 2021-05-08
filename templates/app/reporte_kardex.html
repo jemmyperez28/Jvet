@@ -22,7 +22,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Reporte de Ingresos</h1>
+            <h1 class="m-0">Reporte de Kardex</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -47,7 +47,7 @@
 		{% endfor %}
 		{% endif %}
 		{% endwith %}     
-    <form class="form-horizontal"  action="{{ url_for('otros_bp.reporte_ingresos') }}" method="post" >
+    <form class="form-horizontal"  action="{{ url_for('otros_bp.reporte_kardex') }}" method="post" >
       <div class="card-body">
         <div class="form-group row"> 
           Parametros : 
@@ -106,30 +106,21 @@
                   <table class="table table-hover text-nowrap">
                     <thead>
                       <tr>
-                        <th>Codigo Atencion</th>
-                        <th>Fecha Atencion</th>
-                        <th>Cliente</th>              
-                        <th>Total</th>
+                        <th> Producto </th>
+                        <th> Total IN  </th>
+                        <th> Total OUT </th>              
                       </tr>
                     </thead>
                     <tbody>
                      {% for row in rows2 %}
                      <tr>
-                         <td> ATE{{ row.idatencion }} </td>
-                         <td> {{ row.fecha_atencion }} </td>                     
-                         <td> {{ row.nombre_apellido }} </td>
-                         <td> {{ row.total }} </td>                         
-                         <td><a href="/reporte_atencion/{{row.idatencion}}"> Detalles </a>  </td>   
+                         <td> {{ row.producto }} </td>
+                         <td> {{ row.ingreso }} </td>                     
+                         <td> {{ row.salida }} </td>
                      </tr>          
                           
                      {% endfor %}
-                     <tfoot>
-                        <td>Total : </td>
-                        <td>  </td>
-                        <td>  </td>
-                        <td> <b> {% if tot %} {{ tot }}  {% endif %} </b> </td>
- 
-                    </tfoot>
+                    
                     </tbody>
                   </table>
                 </div>

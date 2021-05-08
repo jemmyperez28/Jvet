@@ -56,7 +56,7 @@ class Uservet(db.Model):
     idsuscripcion = db.Column(db.Integer,db.ForeignKey('suscripcion.idsuscripcion'))
     idvendedor = db.Column(db.Integer,db.ForeignKey('vendedor.idvendedor'))
 
-    def __init__(self,dni,email,password,nombre,apellidos,telefono,tipo_uservet,estado_uservet,validado,creado,vet_id):
+    def __init__(self,dni,email,password,nombre,apellidos,telefono,tipo_uservet,estado_uservet,validado,creado,vet_id,idvendedor):
         self.dni = dni 
         self.email = email
         self.password = password
@@ -68,17 +68,32 @@ class Uservet(db.Model):
         self.validado = validado
         self.creado = creado
         self.vet_id = vet_id
+        self.idvendedor = idvendedor
+
+class HistorialSuscripcion(db.Model):
+    idhist = db.Column(db.Integer, primary_key = True)
+    idsuscripcion = db.Column(db.Integer)
+    fecha = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
+    accion = db.Column(db.String(200))
+    observaciones = db.Column(db.String(200))
+    def __init__(self,idsuscripcion,fecha,accion,observaciones):
+        self.idsuscripcion = idsuscripcion
+        self.fecha = fecha
+        self.accion = accion
+        self.observaciones = observaciones
 
 class Suscripcion(db.Model):
     idsuscripcion = db.Column(db.Integer, primary_key = True)
     tipo = db.Column(db.String(250))
-    fecha_renovacion = db.Column(db.DateTime)
-    fecha_vencimiento = db.Column(db.DateTime)
+    fecha_renovacion = db.Column(db.Date)
+    fecha_vencimiento = db.Column(db.Date)
+    estado = db.Column(db.String(50))
     relacionuservet = db.relationship('Uservet',backref='suscripcion',lazy=True)
-    def __init__(self,tipo,fecha_renovacion,fecha_vencimiento):
+    def __init__(self,tipo,fecha_renovacion,fecha_vencimiento,estado):
         self.tipo = tipo 
         self.fecha_renovacion = fecha_renovacion
         self.fecha_vencimiento = fecha_vencimiento
+        self.estado = estado 
 
 class Vendedor(db.Model):
     idvendedor = db.Column(db.Integer, primary_key = True)
@@ -90,8 +105,10 @@ class Vendedor(db.Model):
     telefono = db.Column(db.String(250))
     banco = db.Column(db.String(250))
     nro_cuenta = db.Column(db.String(250))
+    nro_cuenta_int = db.Column(db.String(250))
+    activo = db.Column(db.String(2))
     relacionuservet = db.relationship('Uservet',backref='vendedor',lazy=True)
-    def __init__(self,dni,email,password,nombre,apellidos,telefono,banco,nro_cuenta):
+    def __init__(self,dni,email,password,nombre,apellidos,telefono,banco,nro_cuenta,nro_cuenta_int,activo):
         self.dni = dni 
         self.email = email
         self.password = password
@@ -100,6 +117,8 @@ class Vendedor(db.Model):
         self.telefono = telefono
         self.banco = banco
         self.nro_cuenta = nro_cuenta
+        self.nro_cuenta_int = nro_cuenta_int
+        self.activo = activo
 
 class Servicios(db.Model):
     idServicio = db.Column(db.Integer, primary_key = True)
