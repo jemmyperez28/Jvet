@@ -77,46 +77,51 @@
          
         </div>
     </form>
-        <div class="row">
+      
+        
+          <div class="row">
             <div class="col-12">
               <div class="card">
                 <div class="card-header">
-                  <h3 class="card-title">Resultados de Busqueda</h3>      
-                  <div class="card-tools">
-                    <div class="input-group input-group-sm" style="width: 150px;">
-                      <input type="text" name="table_search" class="form-control float-right" placeholder="Search">
-                      <div class="input-group-append">
-                        <button type="submit" class="btn btn-default">
-                          <i class="fas fa-search"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <h3 class="card-title">Busqueda</h3>
                 </div>
-                <!-- /.card-header -->
-                <div class="card-body table-responsive p-0">
-                  <table class="table table-hover text-nowrap">
+                <!-- ./card-header -->
+                <div class="card-body">
+                  <table class="table table-bordered table-hover">
                     <thead>
                       <tr>
                         <th>Codigo Atencion</th>
                         <th>Fecha Atencion</th>
-                        <th> DNI </th>
+                        <th>DNI </th>
                         <th>Cliente</th>              
                         <th>Mascota</th>
                       </tr>
                     </thead>
+                  
                     <tbody>
-                     {% for dato in datos %}
-                     <tr>
-                         <td> COD{{ dato.idatencion }} </td>
-                         <td> {{ dato.fecha_atencion }} </td>  
-                         <td> {{ dato.dni }} </td>                        
-                         <td> {{ dato.nombre_apellido }} </td>
-                         <td> {{ dato.nombremascota }} </td>                         
-                         <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a>  </td>
-
-                     </tr>
-                     {% endfor %}
+                      {% for dato in datos %}
+                      <tr data-widget="expandable-table" aria-expanded="false">
+                        <td>ATE{{ dato.idatencion }}</td>
+                        <td>{{ dato.fecha_atencion }} </td>
+                        <td>{{ dato.dni }}</td>
+                        <td>{{ dato.nombremascota }}</td>
+                        <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a></td>
+                      </tr>
+                      <tr class="expandable-body">
+                        <td colspan="5">
+                          <p>
+                            <b> Diagnostico :  </b> <br> 
+                            {{ dato.informe }} <br>
+                            <b> Sintomas :  </b> <br> 
+                            {{ dato.sintomas }} <br>
+                            <b> Receta :  </b> <br> 
+                            {{ dato.receta }} <br>
+                            <b> Examenes :  </b> <br> 
+                            {{ dato.observaciones }} <br>
+                          </p>
+                        </td>
+                      </tr>
+                      {% endfor %}
                     </tbody>
                   </table>
                 </div>
@@ -125,10 +130,21 @@
               <!-- /.card -->
             </div>
           </div>
-        
+
+
+
 
     </section>
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
   {% endblock %}
+
+
+  <script src="../../static/app/plugins/jquery/jquery.min.js"></script>
+<!-- Bootstrap 4 -->
+<script src="../../static/app/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../../static/app/dist/js/adminlte.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../../static/app/dist/js/demo.js"></script>
