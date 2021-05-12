@@ -1,0 +1,177 @@
+{% extends 'app/admin_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Bienvenido {{ session['nombre'] }}</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Mi Suscripcion</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- Mi Suscripcion estado. -->
+              <div class="col-md-6">
+                
+                <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title"> Estado de Suscripcion </h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                          <thead>
+                            <tr>
+                              <th style="width: 10px">Suscripcion</th>
+                              <th style="width: 20px">Estado</th>
+                              <th style="width: 20px">Fecha renovacion</th>
+                              <th style="width: 20px">Fecha vencimiento</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                                <td> SUS{{datos_sus.idsuscripcion}} </td>
+                                <td>  {{datos_sus.tipo}}</td>
+                                <td>
+                                    <span class="badge bg-success">{{datos_sus.fecha_renovacion}}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-danger">{{datos_sus.fecha_vencimiento}}</span>
+                                </td>
+                              </tr>
+                        </tbody>
+                        </table>
+                        </div>
+                </div>
+                <!-- Mi Historial de Pagos - Movimientos -->
+                <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Historial Operaciones</h3>
+                    </div>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-hover text-nowrap">
+                          <thead>
+                            <tr>
+                              <th>Cod</th>
+                              <th>Fecha </th>
+                              <th>Movimiento</th>
+                              <th>Observacion</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {% if datos_ope %}
+                            {% for dato in datos_ope %}
+                            <tr>
+                              <td> {{ dato.idhist }} </td>
+                              <td>{{ dato.fecha }}</td>
+                              <td>{{ dato.accion }}</td>
+                              <td>{{ dato.observaciones }}</td>
+                            </tr>
+                              {% endfor %}
+                              {% endif %}
+                            
+                            </tbody>
+                        </table>
+                    </div>    
+                    </div>
+
+              <div class="card card-primary">
+                <div class="card-header">
+                  <h3 class="card-title">Nuevo Pago</h3>
+                </div>
+                <form action="{{ url_for('admin_bp.admin_suscripcion') }}" method="post" enctype="multipart/form-data">
+                  {{ form_pago.csrf_token }}
+                  <div class="card-body">
+                    <div class="form-group">
+                      <label for="logo">Foto del Pago</label>
+                      <input type="file" class="form-control" onchange="ValidateSize(this)" name="foto" id="foto" required>
+                    </div>
+                  
+                    <div class="form-group">
+                      <label for="Mes">Mes</label>
+                   {{ form_pago.mes(class_="form-control") }}
+                    </div>
+                    <div class="form-group">
+                      <label for="anio">Año</label>
+                   {{ form_pago.anio(class_="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        <label for="monto">Monto</label>
+                     {{ form_pago.monto(class_="form-control") }}
+                      </div>
+                  <!-- /.card-body -->
+                  <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Nuevo Pago</button>
+                  </div>
+                </form>
+               </div>  
+               
+               
+
+
+
+          </div>
+        </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <script>
+    function ValidateSize(file) {
+        var FileSize = file.files[0].size / 1024 / 1024; // in MiB
+        if (FileSize > 1) {
+            alert('El Archivo no Puede Pesar mas de 1 Mega');
+           // $(file).val(''); //for clearing with Jquery
+        } else {
+        }
+    }
+  </script>
+
+
+  {% endblock %}
+
+  
+
+ 

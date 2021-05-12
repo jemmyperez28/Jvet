@@ -208,7 +208,11 @@ class ReporteIngresos(FlaskForm):
     fecha_fin = DateField('fecha_fin',validators=[InputRequired()])
     clave_reporte = PasswordField('clave_reporte',validators=[InputRequired()])
 
-    
+class PagoForm(FlaskForm):
+    foto = FileField('foto',validators=[InputRequired()])
+    mes = SelectField("Mes" , choices=[("Enero","Enero"),("Febrero","Febrero"),("Marzo","Marzo"),("Abril","Abril"),("Mayo","Mayo"),("Junio","Junio"),("Julio","Julio"),("Agosto","Agosto"),("Septiembre","Septiembre"),("Octubre","Octubre"),("Noviembre","Noviembre"),("Diciembre","Diciembre")] , validators=[InputRequired()]) 
+    anio = StringField("anio",validators=[InputRequired()])
+    monto = StringField("monto",validators=[InputRequired()])
 
 
 

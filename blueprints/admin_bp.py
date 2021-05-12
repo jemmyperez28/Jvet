@@ -1,7 +1,7 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
-from forms import AdminInfo , ForgotPassword , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre , BuscarAtencion, AtencionForm2
-from models import Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex
+from forms import AdminInfo , ForgotPassword, PagoForm , Veterinaria , VeterinariaFoto , ClienteForm , MascotaForm , BuscarCM , MascotaFormUpd , AtencionForm , AtencionDNI , AtencionServicioForm , AtencionProductoForm, AtencionOtroForm, AtencionPadre , BuscarAtencion, AtencionForm2
+from models import HistorialPagovendedor, PagoSuscripcion, PagoVendedor, Uservet , Vet , Cliente , Mascota , Atencion , AtencionDetalle , Empleado , Servicios , Productos , Kardex , Suscripcion , HistorialSuscripcion
 from funciones import encriptar
 from config.db import db 
 import os
@@ -18,7 +18,73 @@ admin_bp = Blueprint('admin_bp',__name__)
 
 @admin_bp.route('/index_admin', methods=['GET','POST'])
 def index_admin():
-    return render_template("/app/admin_index.html")     
+    return render_template("/app/admin_index.html"  )     
+
+@admin_bp.route('/admin_suscripcion' , methods=['GET','POST'])
+def admin_suscripcion():
+    nombre = session['nombre']
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    hora = dt.datetime.now().strftime("%Y%m%d%H%M%S") 
+    form_pago = PagoForm()
+    idsus = Uservet.query.filter_by(iduservet=iduservet).first()
+    idsuscripcion = idsus.idsuscripcion
+    idvendedor = idsus.idvendedor
+    if request.method == 'GET':
+        datos_sus = Suscripcion.query.filter_by(idsuscripcion=idsuscripcion).first()
+        datos_ope = HistorialSuscripcion.query.filter_by(idsuscripcion = idsuscripcion).order_by(HistorialSuscripcion.idhist.desc()).limit(10).all()
+        return render_template("/app/admin_suscripcion.html" , form_pago = form_pago ,datos_sus=datos_sus , datos_ope=datos_ope) 
+    if form_pago.validate_on_submit():
+        foto = form_pago.foto.data 
+        mes = form_pago.mes.data 
+        anio = form_pago.anio.data 
+        monto = form_pago.monto.data
+        foto_nombre = secure_filename(foto.filename)    
+        comparar=str(foto_nombre)
+        #extension
+        extension = os.path.splitext(comparar)
+        resultado=comparar.endswith(extensiones)
+        #Si el Archivo no es permitido
+        if resultado == False:
+            mensaje='Error Foto debe ser extension jpg , jpeg o png'
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_suscripcion'))
+        nombre_unico = str(iduservet) + '_pago' + hora + extension[1]
+        #Validar si tengo pago Pendiente (Solo puede haber 1).
+        validar = PagoSuscripcion.query.filter_by(idsuscripcion=idsuscripcion).filter_by(estado="Por Validar").first()
+        if validar is not None:
+            mensaje='Alerta , Usted Ya Tiene un Pago Pendiente del mes de : ' + str(validar.mes)
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_suscripcion'))
+        try:
+            #Crear PagoSuscripcion.
+            nuevo_ps = PagoSuscripcion(idsuscripcion , monto, "Por Validar" , nombre_unico , None, None , mes , anio)
+            db.session.add(nuevo_ps)
+            db.session.flush()
+            idpagoc = nuevo_ps.idpagosuscripcion
+            #Registro en HistorialSuscripcion 
+            nuevo_hs = HistorialSuscripcion(idsuscripcion,None,"Pago Creado","Usuario Creo El Pago de Codigo PAG: " + str(nuevo_ps.idpagosuscripcion) + " El Pago se Validara"  )
+            db.session.add(nuevo_hs)
+            db.session.flush()
+            #Validar si Tengo Vendedor.
+            if idvendedor is not None: 
+                #Se Crea un Pago Al Vendedor 
+                nuevo_pv = PagoVendedor(idvendedor,nuevo_ps.idpagosuscripcion,"Pago Creado", monto)
+                db.session.add(nuevo_pv)
+                db.session.flush()
+                #Registro en HistorialPagVendedor
+                nuevo_hpv = HistorialPagovendedor(None, idvendedor, nombre , "Pago Creado" , "El Cliente " + str(nombre) + " Creo el Pago Codigo PAG" + str(idpagoc) +  " El Mismo sera Validado")
+                db.session.add(nuevo_hpv)
+                db.session.flush()
+            db.session.commit()
+            foto.save(os.path.join(current_app.config['UPLOAD_FOLDER'], nombre_unico))
+            mensaje='Se Creo La Solicitud e Pago Codigo: PAG' + str(nuevo_ps.idpagosuscripcion)
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_suscripcion'))
+        except exc.SQLAlchemyError as e:
+            mensaje='Ocurrio Un Problema Reintente o Consulte con Soporte: ' + str(e._sql_message) 
+            flash(mensaje)
+            return redirect(url_for('admin_bp.admin_suscripcion'))
 
 @admin_bp.route('/admin_info', methods=['GET','POST'])
 def admin_info():

@@ -3,6 +3,50 @@ from datetime import datetime
 from config.db import db
 import pytz
 
+class HistorialPagovendedor(db.Model):
+    idhp = db.Column(db.Integer, primary_key = True)
+    creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
+    idvendedor = db.Column(db.String(20))
+    cliente = db.Column(db.String(100))
+    accion = db.Column(db.String(200))
+    observaciones = db.Column(db.String(200))
+    def __init__(self,creado,idvendedor,cliente,accion,observaciones):
+        self.creado = creado 
+        self.idvendedor = idvendedor
+        self.cliente = cliente
+        self.accion = accion
+        self.observaciones = observaciones
+class PagoSuscripcion(db.Model):
+    idpagosuscripcion = db.Column(db.Integer, primary_key = True)
+    idsuscripcion = db.Column(db.Integer,db.ForeignKey('suscripcion.idsuscripcion'))
+    monto = db.Column(db.String(20))
+    estado = db.Column(db.String(20))
+    imagen = db.Column(db.String(100))
+    creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
+    observacion = db.Column(db.String(200))
+    mes = db.Column(db.String(20))
+    anio = db.Column(db.String(20))
+    def __init__(self,idsuscripcion,monto,estado,imagen,creado,observacion, mes, anio):
+        self.idsuscripcion = idsuscripcion
+        self.monto = monto 
+        self.estado = estado 
+        self.imagen = imagen 
+        self.creado = creado 
+        self.observacion = observacion
+        self.mes = mes 
+        self.anio = anio
+class PagoVendedor(db.Model):
+    idpagovendedor = db.Column(db.Integer, primary_key = True)
+    idvendedor = db.Column(db.Integer,db.ForeignKey('vendedor.idvendedor'))
+    idpagosuscripcion  = db.Column(db.String(20))
+    estado = db.Column(db.String(20))
+    monto = db.Column(db.String(20))
+    def __init__(self,idvendedor,idpagosuscripcion,estado,monto):
+        self.idvendedor = idvendedor
+        self.idpagosuscripcion = idpagosuscripcion
+        self.estado = estado
+        self.monto = monto
+
 class Vet(db.Model):
     idvet = db.Column(db.Integer, primary_key = True)
     nombre = db.Column(db.String(100))
@@ -89,6 +133,7 @@ class Suscripcion(db.Model):
     fecha_vencimiento = db.Column(db.Date)
     estado = db.Column(db.String(50))
     relacionuservet = db.relationship('Uservet',backref='suscripcion',lazy=True)
+    relacionpagosuscripcion = db.relationship('PagoSuscripcion',backref='suscripcion',lazy=True)
     def __init__(self,tipo,fecha_renovacion,fecha_vencimiento,estado):
         self.tipo = tipo 
         self.fecha_renovacion = fecha_renovacion
@@ -108,6 +153,7 @@ class Vendedor(db.Model):
     nro_cuenta_int = db.Column(db.String(250))
     activo = db.Column(db.String(2))
     relacionuservet = db.relationship('Uservet',backref='vendedor',lazy=True)
+    relacionpagovendedor = db.relationship('PagoVendedor',backref='vendedor',lazy=True)
     def __init__(self,dni,email,password,nombre,apellidos,telefono,banco,nro_cuenta,nro_cuenta_int,activo):
         self.dni = dni 
         self.email = email
