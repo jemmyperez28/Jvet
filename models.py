@@ -3,6 +3,20 @@ from datetime import datetime
 from config.db import db
 import pytz
 
+class Mensaje(db.Model):
+    idmensaje = db.Column(db.Integer, primary_key = True)
+    iduservet = db.Column(db.Integer,db.ForeignKey('uservet.iduservet'))
+    nombre = db.Column(db.String(20))
+    mensaje = db.Column(db.String(200))
+    tipo = db.Column(db.String(1))
+    creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))
+    def __init__(self,iduservet,nombre,mensaje,tipo,creado):
+        self.iduservet = iduservet
+        self.nombre = nombre 
+        self.mensaje = mensaje 
+        self.tipo = tipo
+        self.creado = creado
+
 class HistorialPagovendedor(db.Model):
     idhp = db.Column(db.Integer, primary_key = True)
     creado = db.Column(db.DateTime,default=datetime.now(pytz.timezone('America/Lima')))

@@ -2,12 +2,43 @@ from flask import Blueprint , render_template , request , session , redirect , u
 import flask 
 from config.db import db 
 from forms import  BuscarReservacion , NuevaReserva , AtenderReservacion , EmpleadosForm , ReporteIngresos
-from models import  Reservacion , Cliente , Atencion , Cliente , Empleado , Vet 
+from models import  Reservacion , Cliente , Atencion , Cliente , Empleado , Vet , Mensaje
 from sqlalchemy import exc , desc , func
 from datetime import  datetime , timedelta , date
 import pytz
 import dateutil.parser
 otros_bp = Blueprint('otros_bp',__name__)
+
+
+@otros_bp.route('/soporte',methods=['GET','POST'])
+def soporte():
+    mensaje = ''
+    iduservet =  session['iduservet'] 
+    idvet = session['vet_id']
+    nombre_usuario = session['nombre']
+    mensajes = Mensaje.query.filter_by(iduservet=iduservet).order_by(Mensaje.creado.desc()).limit(12).all()
+    if request.method == "GET":
+        return render_template("/app/soporte.html" , mensajes=mensajes)
+    if request.method == "POST":
+        mensaje = request.form.get('mensaje')
+        if mensaje == "":
+            mensaje = 'Alerta , El Mensaje no Puede estar Vacio'
+            flash(mensaje)
+            return render_template("/app/soporte.html" , mensajes=mensajes)
+        try:
+            nuevo_mensaje=Mensaje(iduservet,nombre_usuario,mensaje,'p',None)
+            db.session.add(nuevo_mensaje)
+            db.session.commit()
+            mensaje = 'Mensaje Enviado'
+            flash(mensaje)
+            return redirect(url_for('otros_bp.soporte'))
+        except exc.SQLAlchemyError as e:
+            mensaje = "Error : " + str(e._sql_message) + "Reintente o Consulte con Soporte" 
+            flash(mensaje)
+            return redirect(url_for('otros_bp.soporte'))
+
+
+
 
 @otros_bp.route('/reporte_kardex',methods=['GET','POST'])
 def reporte_kardex():

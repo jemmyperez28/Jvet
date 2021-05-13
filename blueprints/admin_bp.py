@@ -146,7 +146,7 @@ def admin_reporte_atencion():
         #datos = db.engine.execute('select * from atencion inner join cliente ON atencion.idcliente = cliente.idcliente where atencion.idvet ='+ str(idvet) +
         #' and date(Atencion.fecha_atencion) = CURDATE()')
         datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-        ' and date(atencion.fecha_atencion) = CURDATE()')
+        ' and date(atencion.fecha_atencion) = CURDATE()'  + ' order by atencion.fecha_atencion desc')
         return render_template("/app/admin_reporte_atencion.html",datos=datos, form_buscar=form_buscar)
     if request.method == "POST":
         dni = form_buscar.dni.data 
@@ -161,11 +161,11 @@ def admin_reporte_atencion():
                 return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
             #print(cliente.idcliente)
             datos = db.engine.execute('select * from atencion  where atencion.idvet ='+ str(idvet) +
-            ' and atencion.dni='+str(cliente.dni))    
+            ' and atencion.dni='+str(cliente.dni)  + ' order by atencion.fecha_atencion desc')    
             return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
+            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\''  + ' order by atencion.fecha_atencion desc')
             return render_template("/app/admin_reporte_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is not None and fecha is not None:
             mensaje='La Busqueda Debe ser Por Fecha ó por DNI : ' + str(dni)
@@ -193,16 +193,16 @@ def admin_historial_atencion():
         if dni is not None and fecha is None:
             cliente = Atencion.query.filter_by(dni=dni).first()
             if not cliente:
-                mensaje='No se Encontro Informacion para Cliente DNI : ' + str(dni)
+                mensaje='El Cliente : ' + str(dni) + ' No Cuenta con Registros.'
                 datos={}
                 flash(mensaje)
                 return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-            ' and atencion.dni='+str(cliente.dni))    
+            ' and atencion.dni = '+str(cliente.dni) + ' order by atencion.fecha_atencion desc' )    
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is None and fecha is not None:
             datos = db.engine.execute('select * from atencion where atencion.idvet ='+ str(idvet) +
-            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\'' )
+            ' and DATE(atencion.fecha_atencion)=\''+str(fecha) +'\''  + ' order by atencion.fecha_atencion desc')
             return render_template("/app/admin_historial_atencion.html",datos=datos,form_buscar=form_buscar)
         elif dni is not None and fecha is not None:
             mensaje='La Busqueda Debe ser Por Fecha ó por DNI : ' + str(dni)

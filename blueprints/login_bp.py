@@ -90,10 +90,35 @@ def login_usuario():
         password=encriptar(password_data)
         #Comprobacion 
         usuario = Uservet.query.filter_by(email=email).first()
+        #no existe correo en uservet
         if not usuario : 
-            mensaje  ="Error , El Correo Ingresado no Existe"
-            flash(mensaje)
-            return redirect(url_for('login.login_usuario'))
+            #Login Vendedor.
+            vendedor = Vendedor.query.filter_by(email=email).first()
+            #no existe correo en vendedor
+            if not vendedor:
+                mensaje  ="Error , Email o Contraseña Incorrecta"
+                flash(mensaje)
+                return redirect(url_for('login.login_usuario'))
+            #encontro vendedor
+            else: 
+            #validar que cuenta este activa.
+                if vendedor.activo == 'si':
+                    #validar clave.
+                    if password == vendedor.password:
+                        session['loggedin'] = True 
+                        session['idvendedor'] = vendedor.idvendedor
+                        session['nombre'] = vendedor.nombre
+                        session['tipo_uservet'] = 'vendedor'
+                        return redirect(url_for('vend_bp.index_vend'))
+                    else : 
+                        mensaje  ="Contraseña Incorrecta"
+                        flash(mensaje)
+                        return redirect(url_for('login.login_usuario'))
+                else:
+                    mensaje  ="Cuenta Desactivada"
+                    flash(mensaje)
+                    return redirect(url_for('login.login_usuario'))
+        #encontro userver
         else : 
             #Comprobar que Suscripcion no este vencida. 
             vencido = Suscripcion.query.filter_by(idsuscripcion=usuario.idsuscripcion).first()

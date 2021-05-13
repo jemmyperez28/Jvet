@@ -22,7 +22,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Historial de Atencion</h1>
+            <h1 class="m-0">Historia Clinica</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -104,8 +104,9 @@
                         <td>ATE{{ dato.idatencion }}</td>
                         <td>{{ dato.fecha_atencion }} </td>
                         <td>{{ dato.dni }}</td>
+                        <td>{{ dato.nombre_apellido }}</td>
                         <td>{{ dato.nombremascota }}</td>
-                        <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Detalles </a></td>
+                        <td><a href="/editar_atencion_padre/{{dato.idatencion}}"> Editar/Detalles </a></td>
                       </tr>
                       <tr class="expandable-body">
                         <td colspan="5">

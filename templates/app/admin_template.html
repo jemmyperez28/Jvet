@@ -122,6 +122,24 @@
             </a>
           </li>
 
+          <li class="nav-header"> Historial </li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_historial_atencion')}}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Historia Clinica
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{url_for('admin_bp.admin_reporte_atencion')}}" class="nav-link">
+              <i class="nav-icon fas fa-columns"></i>
+              <p>
+                Historial de Ventas
+              </p>
+            </a>
+          </li>
+
           <li class="nav-header"> Configuracion </li>
           <li class="nav-item">
             <a href="{{url_for('admin_bp.admin_info')}}" class="nav-link">
@@ -164,24 +182,6 @@
             </a>
           </li>
           
-          <li class="nav-header"> Historial </li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_historial_atencion')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Historia Clinica
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{url_for('admin_bp.admin_reporte_atencion')}}" class="nav-link">
-              <i class="nav-icon fas fa-columns"></i>
-              <p>
-                Historial de Ventas
-              </p>
-            </a>
-          </li>
-
 
            <li class="nav-header">Operaciones</li>
            <li class="nav-item">
@@ -193,10 +193,10 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="{{url_for('otros_bp.soporte')}}" class="nav-link">
               <i class="nav-icon fas fa-columns"></i>
               <p>
-                Soporte Tecnico
+                Soporte / Contacto
               </p>
             </a>
           </li>
