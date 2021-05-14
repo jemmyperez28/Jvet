@@ -31,6 +31,12 @@ class ForgotPassword(FlaskForm):
     password1 = PasswordField('password1',validators=[InputRequired()])
     password2 = PasswordField('password2',validators=[InputRequired()])
 
+class ForgotPassword2(FlaskForm):
+    password_old = StringField('password_old',validators=[InputRequired()])
+    password1 = PasswordField('password1',validators=[InputRequired()])
+    password2 = PasswordField('password2',validators=[InputRequired()])
+
+
 class Veterinaria(FlaskForm):
     nombre = StringField('nombre',validators=[InputRequired()])
     logo = FileField('logo')
@@ -213,6 +219,20 @@ class PagoForm(FlaskForm):
     mes = SelectField("Mes" , choices=[("Enero","Enero"),("Febrero","Febrero"),("Marzo","Marzo"),("Abril","Abril"),("Mayo","Mayo"),("Junio","Junio"),("Julio","Julio"),("Agosto","Agosto"),("Septiembre","Septiembre"),("Octubre","Octubre"),("Noviembre","Noviembre"),("Diciembre","Diciembre")] , validators=[InputRequired()]) 
     anio = StringField("anio",validators=[InputRequired()])
     monto = StringField("monto",validators=[InputRequired()])
+
+class VendedorForm(FlaskForm):
+    dni = StringField('dni')
+    correo = StringField('correo')
+    nombre = StringField('nombre')
+    apellidos = StringField('apellidos')
+    telefono = StringField('telefono')
+    banco = StringField('banco')
+    nro_cuenta = StringField('nro_cuenta')
+    nro_cuenta_int = StringField('nro_cuenta_int')
+
+
+
+
 
 
 

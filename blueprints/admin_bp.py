@@ -73,7 +73,7 @@ def admin_suscripcion():
                 db.session.add(nuevo_pv)
                 db.session.flush()
                 #Registro en HistorialPagVendedor
-                nuevo_hpv = HistorialPagovendedor(None, idvendedor, nombre , "Pago Creado" , "El Cliente " + str(nombre) + " Creo el Pago Codigo PAG" + str(idpagoc) +  " El Mismo sera Validado")
+                nuevo_hpv = HistorialPagovendedor(None, idvendedor, nombre , "Pago Creado" , "El Cliente " + str(nombre) + " Creo el Pago Codigo PAGV" + str(nuevo_pv.idpagovendedor) +  " El Mismo sera Validado")
                 db.session.add(nuevo_hpv)
                 db.session.flush()
             db.session.commit()
