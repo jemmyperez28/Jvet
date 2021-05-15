@@ -119,7 +119,7 @@ def login_usuario():
                     flash(mensaje)
                     return redirect(url_for('login.login_usuario'))
         #encontro userver
-        else : 
+        else :             
             #Comprobar que Suscripcion no este vencida. 
             vencido = Suscripcion.query.filter_by(idsuscripcion=usuario.idsuscripcion).first()
             if vencido.estado == "desactivo":
@@ -139,7 +139,7 @@ def login_usuario():
                 session['nombre'] = usuario.nombre
                 session['tipo_uservet'] = usuario.tipo_uservet
                 if usuario.tipo_uservet == "admin":
-                    return redirect(url_for('admin_bp.index_admin'))
+                    return redirect(url_for('admin_bp.index_admin'))  
             else:
                 mensaje  = "Error , Contraseña Incorrecta"
                 flash(mensaje)

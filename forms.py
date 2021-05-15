@@ -18,6 +18,11 @@ class LoginUsuario(FlaskForm):
     email = StringField('email',validators=[InputRequired()])
     password = PasswordField('password',validators=[InputRequired()])
 
+class LoginSuper(FlaskForm):
+    user = StringField('user',validators=[InputRequired()])
+    pass1 = PasswordField('pass1',validators=[InputRequired()])
+    pass2 = PasswordField('pass2',validators=[InputRequired()])
+
 class AdminInfo(FlaskForm):
     dni = IntegerField('dni',validators=[InputRequired()])
     email = StringField('email',validators=[InputRequired()])

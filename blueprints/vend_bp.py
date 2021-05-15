@@ -41,7 +41,6 @@ def vend_clientes():
     tipo = session['tipo_uservet']
     #atenciones = .join(Cliente, Atencion.idcliente==Cliente.idcliente).add_columns(Cliente.nombre , Cliente.apellidos).order_by(Atencion.fecha_atencion.desc()).limit(5).all()
     datos = Uservet.query.with_entities(Uservet.email,Uservet.nombre,Uservet.apellidos,Uservet.telefono).join(Suscripcion, Uservet.idsuscripcion == Suscripcion.idsuscripcion).add_columns(Suscripcion.fecha_renovacion,Suscripcion.fecha_vencimiento,Suscripcion.estado,Suscripcion.idsuscripcion).all()
-    print(datos)
     return render_template("/app/vend_clientes.html" ,datos=datos)
 
 

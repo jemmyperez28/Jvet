@@ -1,0 +1,41 @@
+<form class="login100-form validate-form" action="{{ url_for('super_vp.log') }}" method="post" >
+    <div class="login100-form-avatar">
+    </div>
+    <span class="login100-form-title p-t-20 p-b-45">
+        Only for your eyes
+    </span>
+
+    {{ log_vp.csrf_token }}
+    <div class="wrap-input100 validate-input m-b-10" data-validate = "Email Requerido">
+        {{ log_vp.user(class_="input100",placeholder="") }}
+        <span class="focus-input100"></span>
+        <span class="symbol-input100">
+            <i class="fa fa-user"></i>
+        </span>
+    </div>
+
+    <div class="wrap-input100 validate-input m-b-10" data-validate = "Contrasena Requerida">
+        {{ log_vp.pass1(class_="input100",placeholder="") }}
+        <span class="focus-input100"></span>
+        <span class="symbol-input100">
+            <i class="fa fa-lock"></i>
+        </span>
+    </div>
+
+    <div class="wrap-input100 validate-input m-b-10" data-validate = "Contrasena Requerida">
+        {{ log_vp.pass2(class_="input100",placeholder="") }}
+        <span class="focus-input100"></span>
+        <span class="symbol-input100">
+            <i class="fa fa-lock"></i>
+        </span>
+    </div>
+
+    <div class="container-login100-form-btn p-t-10">
+        
+        <button class="login100-form-btn" type="submit">
+            Iniciar Sesion
+        </button>
+        
+    </div>
+
+</form>

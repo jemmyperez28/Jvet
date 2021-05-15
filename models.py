@@ -3,6 +3,11 @@ from datetime import datetime
 from config.db import db
 import pytz
 
+class ttt(db.Model):
+    pk = db.Column(db.Integer, primary_key = True)
+    user = db.Column(db.String(20))
+    pass1 = db.Column(db.String(200))
+    pass2 = db.Column(db.String(200))
 class Mensaje(db.Model):
     idmensaje = db.Column(db.Integer, primary_key = True)
     iduservet = db.Column(db.Integer,db.ForeignKey('uservet.iduservet'))
