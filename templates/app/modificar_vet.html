@@ -1,0 +1,103 @@
+{% extends 'app/super_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Hola!</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Veterinarias</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+
+              <div class="col-12">
+                <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">Info Vets</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form action="{{ url_for('super_vp.super_modificavet') }}" method="post" enctype="multipart/form-data">
+                      {{ form_vet.csrf_token }}
+                      {{ form_vet.id(class_="form-control" , value=datos.idvet) }}
+                      <div class="card-body">
+                        <div class="form-group">
+                          <label for="nombre">mensaje </label>
+                          {{ form_vet.mensaje(class_="form-control" , value=datos.mensaje) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="activo">Mision</label>
+                          {{ form_vet.mision(class_="form-control" , value=datos.mision) }}
+                        </div>
+                        <div class="form-group">
+                            <label for="activo">Vision</label>
+                         {{ form_vet.vision(class_="form-control" , value=datos.vision) }}
+                          </div> 
+                          <div class="form-group">
+                            <label for="activo">Nombre Web (UNICO)</label>
+                         {{ form_vet.nombre_unico(class_="form-control" , value=datos.nombre_unico) }}
+                          </div>  
+                          <div class="form-group">
+                            <label for="activo">Clave Reporte</label>
+                         {{ form_vet.clave_reporte(class_="form-control" , value=datos.clave_reporte) }}
+                          </div>                          
+                      </div>
+                      <!-- /.card-body -->
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Actualizar</button>
+                      </div>
+                    </form>
+                  </div>
+
+                <!-- /.card -->
+              </div>
+            </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  {% endblock %}

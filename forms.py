@@ -4,6 +4,21 @@ from wtforms import StringField , PasswordField , IntegerField , SubmitField , F
 from wtforms.validators import InputRequired
 from models import Mascota , Empleado , Uservet , Servicios , Productos , Hora
 
+
+class ModificarVet(FlaskForm):
+    id = HiddenField('id')
+    mensaje = StringField('mensaje')
+    vision = StringField('vision')
+    mision = StringField('mision')
+    nombre_unico = StringField('nombre_unico')
+    clave_reporte = StringField('clave_reporte')
+
+class ModificarUsuario(FlaskForm):
+    id = HiddenField('id')
+    clave = StringField('clave')
+    validado = StringField('validado')
+
+
 class RegistroUsuario(FlaskForm):
     dni = IntegerField('dni')
     nombre = StringField('nombre',validators=[InputRequired()])
@@ -234,6 +249,15 @@ class VendedorForm(FlaskForm):
     banco = StringField('banco')
     nro_cuenta = StringField('nro_cuenta')
     nro_cuenta_int = StringField('nro_cuenta_int')
+
+class NuevoVendedorForm(FlaskForm):
+    dni = StringField('dni')
+    correo = StringField('correo')
+    password = StringField('password')
+    nombre = StringField('nombre')
+    apellidos = StringField('apellidos')
+    telefono = StringField('telefono')
+
 
 
 

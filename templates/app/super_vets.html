@@ -1,0 +1,119 @@
+{% extends 'app/super_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Hola!</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Veterinarias</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      
+                  </div>
+                  <div class="col-3">
+                      <input type="text" id="search" placeholder="Busqueda">
+                      <i class="fas fa-search"></i>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap" id="table" >
+                      <thead>
+                        <tr>
+                          <th>Codigo Veterinaria</th>
+                          <th>Nombre Vet</th>
+                          <th>Mensaje</th>
+                          <th>Mision</th>    
+                          <th>Vision</th>             
+                          <th>Nombre WEB (UNICO)</th>
+                          <th>Clave de Reportes</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                       {% for dato in datos %}
+                       <tr>
+                           <td> VET{{ dato.idvet }} </td>
+                           <td> {{dato.nombre }} </td>
+                           <td> {{dato.mensaje }} </td> 
+                           <td> {{dato.mision }} </td>   
+                           <td> {{dato.vision }} </td>      
+                           <td> {{dato.nombre_unico }} </td>  
+                           <td> {{dato.clave_reporte }} </td>  
+                           <td><a href="/super_modificavet/{{dato.idvet}}"> Modificar </a>  </td>
+                       </tr>
+                       {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+              </div>
+
+            </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+  var $rows = $('#table tr');
+  $('#search').keyup(function() {
+      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+      
+      $rows.show().filter(function() {
+          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+          return !~text.indexOf(val);
+      }).hide();
+  });
+  </script>
+  {% endblock %}

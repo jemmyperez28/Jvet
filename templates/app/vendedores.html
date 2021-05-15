@@ -1,0 +1,175 @@
+{% extends 'app/super_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Hola!</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Mis Vendedores</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+    {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header">
+                        
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="search" placeholder="Busqueda">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                      <table class="table table-hover text-nowrap" id="table" >
+                        <thead>
+                          <tr>
+                            <th>Codigo Vendedor</th>
+                            <th>DNI </th>
+                            <th>email</th>    
+                            <th>Password</th>             
+                            <th>Nombre</th>
+                            <th>apellidos</th>
+                            <th>telefono</th>
+                            <th>Banco</th>
+                            <th>NRO CUENTA BCP</th>
+                            <th>NRO CUENTA INTER</th>
+                            <th>Cuenta Activa</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         {% for dato in datos %}
+                         <tr>
+                             <td> VND{{ dato.idvendedor }} </td>
+                             <td> {{ dato.dni }} </td>
+                             <td> {{dato.email}} </td>
+                             <td> {{dato.password }} </td>
+                             <td> {{dato.nombre }} </td>  
+                             <td> {{dato.apellidos }} </td>        
+                             <td> {{dato.telefono }} </td>
+                             <td> {{dato.banco }} </td>
+                             <td> {{dato.nro_cuenta }} </td>
+                             <td> {{dato.nro_cuenta_int }} </td>
+                             <td> {{dato.activo }} </td>
+                             <td><a href="/super_activarvend/{{dato.idvendedor}}"> Activar </a>  </td>
+                         </tr>
+                         {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                  <!-- /.card -->
+                </div>
+
+                <div class="col-md-6">
+                  <!-- general form elements -->
+                  <div class="card card-primary">
+                    <div class="card-header">
+                      <h3 class="card-title">Nuevo Vendedor</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form action="{{ url_for('super_vp.super_vendedores') }}" method="post" enctype="multipart/form-data">
+                      {{ form_vendedor.csrf_token }}
+                      <div class="card-body">
+                        <div class="form-group">
+                          <label for="nombre"> DNI / CE </label>
+                          {{ form_vendedor.dni(class_="form-control" ) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="telefono">Correo</label>
+                          {{ form_vendedor.correo(class_="form-control" ) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="whatsapp">Clave </label>
+                          {{ form_vendedor.password(class_="form-control" ) }}
+                        </div>
+                        <div class="form-group">
+                          <label for="ciudad"> Nombre </label>
+                          {{ form_vendedor.nombre(class_="form-control" ) }}
+                        </div>  
+                        <div class="form-group">
+                            <label for="ciudad"> Apellidos </label>
+                            {{ form_vendedor.apellidos(class_="form-control" ) }}
+                          </div>    
+                          <div class="form-group">
+                            <label for="ciudad">Telefono </label>
+                            {{ form_vendedor.telefono(class_="form-control" ) }}
+                          </div>            
+                      </div>
+                      <!-- /.card-body -->
+                      <div class="card-footer">
+                        <button type="submit" class="btn btn-primary">Nuevo Vendedor</button>
+                      </div>
+                    </form>
+                  </div>
+                  <!-- /.card -->
+                </div> 
+
+              </div>
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+  var $rows = $('#table tr');
+  $('#search').keyup(function() {
+      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+      
+      $rows.show().filter(function() {
+          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+          return !~text.indexOf(val);
+      }).hide();
+  });
+  </script>
+
+  {% endblock %}
+
+  
+
+ 
