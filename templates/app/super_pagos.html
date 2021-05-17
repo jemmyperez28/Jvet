@@ -1,0 +1,219 @@
+{% extends 'app/super_template.html' %}
+
+{% block usuario %}
+{% if session['loggedin'] %}
+ <!-- Sidebar -->
+ <div class="sidebar">
+  <!-- Sidebar user panel (optional) -->
+  <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+    <div class="info">
+      <a href="#" class="d-block">Hola!</a>
+    </div>
+  </div>
+  {% endif %}
+{% endblock usuario %}
+
+{% block content %}
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <div class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1 class="m-0">Flujo de Pagos</h1>
+          </div><!-- /.col -->
+          <div class="col-sm-6">
+            <ol class="breadcrumb float-sm-right">
+            </ol>
+          </div><!-- /.col -->
+        </div><!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </div>
+    <!-- /.content-header -->
+
+    <!-- Main content -->
+    <section class="content">
+        
+        {% with messages = get_flashed_messages() %}
+		{% if messages  %}
+		{% for message in messages %}
+
+		  <div class="alert alert-success alert-dismissible fade show" role="alert">
+		  {{ message }}
+		  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		  </button>
+		</div>
+		{% endfor %}
+		{% endif %}
+		{% endwith %}
+
+        <div class="container-fluid">
+            <div class="row">
+              <!-- left column -->
+
+              <div class="col-12">
+                <div class="card">
+                  <div class="card-header">
+                      
+                  </div>
+                  <div class="col-3">
+                      <input type="text" id="search" placeholder="Busqueda">
+                      <i class="fas fa-search"></i>
+                  </div>
+                  <!-- /.card-header -->
+                  <div class="card-body table-responsive p-0">
+                    <table class="table table-hover text-nowrap" id="table" >
+                      <thead>
+                        <tr>
+                          <th> Cod Suscripcion </th>
+                          <th> Tipo </th>
+                          <th> estado </th>
+                          <th> fecha_activacion </th>
+                          <th> fecha_vencimiento </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                       {% for su in sus %}
+                       <tr>
+                           <td> SUS{{ su.idsuscripcion }} </td>
+                           <td> {{ su.tipo }} </td>
+                           <td> {{su.estado}} </td>
+                           <td> {{su.fecha_renovacion}} </td>
+                           <td> {{su.fecha_vencimiento }} </td>
+                       </tr>
+                       {% endfor %}
+                      </tbody>
+                    </table>
+                  </div>
+                  <!-- /.card-body -->
+                </div>
+
+
+                <div class="card">
+                    <div class="card-header">
+                        
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="search2" placeholder="Busqueda">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                      <table class="table table-hover text-nowrap" id="table2" >
+                        <thead>
+                          <tr>
+                            <th> Cod Historial </th>
+                            <th> fecha operacion </th>
+                            <th> accion  </th>
+                            <th> obs </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                         {% for hsu in hsus %}
+                         <tr>
+                             <td> SUS{{ hsu.idsuscripcion }} </td>
+                             <td> {{ hsu.fecha }} </td>
+                             <td> {{hsu.accion}} </td>
+                             <td> {{hsu.observaciones}} </td>
+                         </tr>
+                         {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+                <!-- /.card -->
+
+
+                <div class="card">
+                    <div class="card-header">
+                        
+                    </div>
+                    <div class="col-3">
+                        <input type="text" id="search3" placeholder="Busqueda">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body table-responsive p-0">
+                      <table class="table table-hover text-nowrap" id="table3" >
+                        <thead>
+                          <tr>
+                            <th> CodPago </th>
+                            <th> CodSuscripcion </th>
+                            <th> MONTO  </th>
+                            <th> Estado </th>
+                            <th> Fecha creacion </th>
+                            <th> Año </th>
+                            <th> Mes </th>
+                            <th> Obs </th>
+                            <th> Imagen </th>
+
+                          </tr>
+                        </thead>
+                        <tbody>
+                         {% for pago in pagos %}
+                         <tr>
+                             <td> PAG{{ pago.idpagosuscripcion }} </td>
+                             <td> SUS{{ pago.idsuscripcion }} </td>
+                             <td> {{pago.monto  }} </td>
+                             <td> {{pago.estado}} </td>
+                             <td> {{pago.creado}} </td>
+                             <td> {{pago.anio}} </td>
+                             <td> {{pago.mes}} </td>
+                             <td> {{pago.observacion}} {{pago.imagen}} </td>
+                             <td> <img src="{{ url_for('static', filename='imagenes/'+ pago.imagen ) }} "> </td>
+                             <td><a href="/super_validarpago/{{pago.idpagosuscripcion}}"> OK RENOVAR! </a>  </td>
+                             <td><a href="/super_cancelarpago/{{pago.idpagosuscripcion}}"> CANCELARLO!</a>  </td>
+                         </tr>
+                         {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- /.card-body -->
+                  </div>
+
+              </div>
+
+            </div>
+
+    </section>
+    <!-- /.content -->
+  </div>
+  <!-- /.content-wrapper -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script>
+  var $rows = $('#table tr');
+  var $rows2 = $('#table2 tr');
+  var $rows3 = $('#table3 tr');
+
+  $('#search').keyup(function() {
+      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+      
+      $rows.show().filter(function() {
+          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+          return !~text.indexOf(val);
+      }).hide();
+  });
+
+  $('#search2').keyup(function() {
+      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+      
+      $rows2.show().filter(function() {
+          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+          return !~text.indexOf(val);
+      }).hide();
+  });
+
+  $('#search3').keyup(function() {
+      var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
+      
+      $rows3.show().filter(function() {
+          var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
+          return !~text.indexOf(val);
+      }).hide();
+  });
+  </script>
+  {% endblock %}

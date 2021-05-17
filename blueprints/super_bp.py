@@ -1,11 +1,108 @@
 from flask import Blueprint , render_template , request , session , redirect , url_for , flash , current_app 
 import flask 
 from config.db import db 
-from models import Suscripcion, Vet , Vendedor , Uservet , PagoVendedor , HistorialPagovendedor ,ttt as T 
+from models import HistorialSuscripcion, PagoSuscripcion, Suscripcion, Vet , Vendedor , Uservet , PagoVendedor , HistorialPagovendedor ,ttt as T 
 from sqlalchemy import exc , desc , func
 from forms import VendedorForm , ForgotPassword2 , LoginSuper , ModificarUsuario , ModificarVet , NuevoVendedorForm
 from funciones import encriptar , super_required
+from datetime import datetime
+import datetime as dt 
+import pytz
+import dateutil.parser
+from dateutil.relativedelta import relativedelta
 super_vp = Blueprint('super_vp',__name__)
+
+
+@super_vp.route('/super_depositovendedor/<id>', methods=['GET','POST'])
+@super_required
+def super_depositovendedor(id):
+    idpagovendedor = id 
+    #PagoVendedor
+    pagovendedor = PagoVendedor.query.filter_by(idpagovendedor=idpagovendedor).first()
+    pagovendedor.estado = "Pago Depositado"
+    db.session.flush()
+    #Historial de Pago al Vendedor
+    nuevo_hpv = HistorialPagovendedor(None, pagovendedor.idvendedor, "Sistemas" , "Se Realizo un Deposito" , "El Codigo de Pago :" + str(pagovendedor.idpagovendedor) + " , Se Realizo el deposito correspondiente! ")
+    db.session.add(nuevo_hpv)
+    db.session.commit()
+    mensaje = "Deposito OK"
+    flash(mensaje)
+    return redirect(url_for('super_vp.super_pagosv'))
+@super_vp.route('/super_cancelarpago/<id>', methods=['GET','POST'])
+@super_required
+def super_cancelarpago(id):
+    idpago = id
+    #PagoSuscripcion
+    pagosus = PagoSuscripcion.query.filter_by(idpagosuscripcion = idpago).first()
+    pagosus.estado = "Operacio Cancelada"
+    pagosus.observacion = "El Pago No Pudo Ser Verificado."
+    db.session.flush()
+    #HistorialSuscripcion
+    nuevo_hs = HistorialSuscripcion(pagosus.idsuscripcion,None,"El pago No Pudo Ser Verificado Porfavor genere otro pago o consulte con Soporte el motivo" )
+    db.session.add(nuevo_hs)
+    db.session.flush()
+    #Modifico Pago Vendedor
+    pagovendedor = PagoVendedor.query.filter_by(idpagosuscripcion=idpago).first()
+    pagovendedor.estado = "Operacion Cancelada"
+    db.session.flush()
+    #Historial de Cancelado
+    nuevo_hpv = HistorialPagovendedor(None, pagovendedor.idvendedor, "Sistemas" , "Transaccion Cancelada" , "El Codigo de Pago :" + str(pagovendedor.idpagovendedor) + " Se Cancelo por sistemas. Indique al cliente que genere otro pago ")
+    db.session.add(nuevo_hpv)
+    db.session.commit()
+    mensaje = "Pago Cancelado!"
+    flash(mensaje)
+    return redirect(url_for('super_vp.super_pagos'))
+
+@super_vp.route('/super_validarpago/<id>', methods=['GET','POST'])
+@super_required
+def super_validarpago(id):
+    idpago = id
+    #PagoSuscripcion
+    hoy = datetime.now(pytz.timezone('America/Lima'))
+    pagosus = PagoSuscripcion.query.filter_by(idpagosuscripcion = idpago).first()
+    pagosus.estado = "Pago OK!"
+    pagosus.observacion = "Se Valido el Pago el Dia : " + str(hoy)
+    db.session.flush()
+    #Agrega 30 dias a Suscripcion.
+    suscripcion = Suscripcion.query.filter_by(idsuscripcion=pagosus.idsuscripcion).first()
+    suscripcion.tipo = "Pago"
+    suscripcion.fecha_renovacion = suscripcion.fecha_renovacion + relativedelta(months=1)
+    old_fecha_venc = suscripcion.fecha_vencimiento
+    suscripcion.fecha_vencimiento = suscripcion.fecha_vencimiento + relativedelta(months=1)
+    #HistorialSuscripcion.
+    nuevo_hs = HistorialSuscripcion(pagosus.idsuscripcion,None,"Pago Validado : PAG" + str(idpago) ,"El Pago del mes de : " + str(pagosus.mes)+ str(pagosus.anio) +" Fue Validado Correctamente , 30 dias fueron agregados a la fecha de vencimiento : "  + str(old_fecha_venc) )
+    db.session.add(nuevo_hs)
+    db.session.flush()
+    #Modifico Pago Vendedor
+    pagovendedor = PagoVendedor.query.filter_by(idpagosuscripcion=idpago).first()
+    pagovendedor.estado = "Pendiente Deposito"
+    db.session.flush()
+    #Se Agrega Historial Pago Vendedor.
+    nuevo_hpv = HistorialPagovendedor(None, pagovendedor.idvendedor, "Sistemas" , "Deposito Pendiente" , "El Codigo de Pago :" + str(pagovendedor.idpagovendedor) + " Fue Validado , Esta Pendiente el Deposito al numero de cuenta proporcionado ")
+    db.session.add(nuevo_hpv)
+    db.session.commit()
+    mensaje = "TODO OK!"
+    flash(mensaje)
+    return redirect(url_for('super_vp.super_pagos'))
+
+
+
+@super_vp.route('/super_pagosv')
+@super_required
+def super_pagosv():
+    pagosv = PagoVendedor.query.all() 
+    hpagosv = HistorialPagovendedor.query.all()
+    return render_template('/app/super_pagosv.html' , pagosv=pagosv, hpagosv=hpagosv)
+
+@super_vp.route('/super_pagos')
+@super_required
+def super_pagos():
+    #pagosv = PagoVendedor.query.all() 
+    #hpagosv = HistorialPagovendedor.query.all()
+    pagos = PagoSuscripcion.query.all()
+    sus = Suscripcion.query.all()
+    hsus = HistorialSuscripcion.query.all()
+    return render_template('/app/super_pagos.html' , sus=sus, hsus=hsus , pagos= pagos)
 
 @super_vp.route('/super_activarvend/<id>', methods=['GET','POST'])
 @super_required
@@ -18,7 +115,6 @@ def super_activarvend(id):
     mensaje = 'El Vendedor Fue Activado'
     flash(mensaje)
     return redirect(url_for('super_vp.super_vendedores'))
-
 
 @super_vp.route('/super_vendedores', methods=['GET','POST'])
 @super_required
