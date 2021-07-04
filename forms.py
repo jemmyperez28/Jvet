@@ -62,8 +62,8 @@ class Veterinaria(FlaskForm):
     logo = FileField('logo')
     telefono = StringField('nombre',validators=[InputRequired()])
     whatsapp = StringField('nombre',validators=[InputRequired()])
-    ciudad = SelectField("ciudad" , choices=[("Lima","Lima"),("Huacho","Huacho")])
-    distrito = SelectField("distrito" , choices=[("San Juan de Lurigancho","San Juan de Lurigancho"),("Barrios Altos","Barrios Altos")])
+    ciudad = SelectField("ciudad" , choices=[("Lima","Lima"),("Callao","Callao")])
+    distrito = SelectField("distrito" , choices=[("Ancón","Ate"),("Barranco","Breña","San Juan de Lurigancho","Lurigancho","Lince","Rimac")])
     direccion = StringField('nombre',validators=[InputRequired()])
 
 class VeterinariaFoto(FlaskForm):
